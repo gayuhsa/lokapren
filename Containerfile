@@ -1,11 +1,17 @@
 # Build:
 # podman build -t my-app .
 
-# Run:
+# Run (Linux):
 # podman run --rm -p 8080:80 -v "$(pwd)":/var/www/html -v /var/www/html/writable my-app
 
-# Shell:
+# Run (Windows):
+# podman run --rm -p 8080:80 -v "%cd%":/var/www/html -v /var/www/html/writable my-app
+
+# Shell (Linux):
 # podman run -it --rm -p 8080:80 -v "$(pwd)":/var/www/html -v /var/www/html/writable my-app bash
+
+# Shell (Windows):
+# podman run -it --rm -p 8080:80 -v "%cd%":/var/www/html -v /var/www/html/writable my-app bash
 
 FROM docker.io/library/php:8.5.10-apache-trixie
 
