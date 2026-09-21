@@ -1,18 +1,3 @@
-# Build:
-# podman build -t my-app .
-
-# Run (Linux):
-# podman run --rm -p 8080:80 -v "$(pwd)":/var/www/html -v /var/www/html/writable my-app
-
-# Run (Windows):
-# podman run --rm -p 8080:80 -v "%cd%":/var/www/html -v /var/www/html/writable my-app
-
-# Shell (Linux):
-# podman run -it --rm -p 8080:80 -v "$(pwd)":/var/www/html -v /var/www/html/writable my-app bash
-
-# Shell (Windows):
-# podman run -it --rm -p 8080:80 -v "%cd%":/var/www/html -v /var/www/html/writable my-app bash
-
 FROM docker.io/library/php:8.5.10-apache-trixie
 
 WORKDIR /var/www/html
@@ -52,6 +37,10 @@ COPY vhost.conf /etc/apache2/sites-available/000-default.conf
 COPY . .
 
 RUN chown -R www-data:www-data /var/www/html
+
+RUN mkdir -p /var/www/html/writable && \
+    chown -R www-data:www-data /var/www/html/writable && \
+    chmod -R 775 /var/www/html/writable
 
 EXPOSE 80
 
