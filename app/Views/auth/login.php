@@ -4,24 +4,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
+    <style>
+        body { font-family: sans-serif; max-width: 30em; margin: 3rem auto; padding: 0 1rem; }
+        h1 { font-size: 1.5rem; }
+        form { display: flex; flex-direction: column; gap: .6rem; }
+        label { font-weight: bold; }
+        input, button { font: inherit; padding: .5rem; border: 1px solid #aaa; border-radius: 4px; }
+        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
+        button:hover { background: #1d4ed8; }
+        .notice { background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; padding: .5rem; border-radius: 4px; }
+        .alert { background: #fef2f2; border: 1px solid #f87171; color: #991b1b; padding: .5rem; border-radius: 4px; }
+        .notice-temp { background: #e0f2fe; border: 1px solid #38bdf8; color: #075985; padding: .5rem; border-radius: 4px; }
+    </style>
 </head>
 <body>
+    <p class="notice-temp"><strong>Temporary placeholder frontend.</strong> This page will be replaced by a proper design.</p>
     <h1>Log in</h1>
 
     <?php if (session('error') !== null) : ?>
-        <p><?= esc(session('error')) ?></p>
+        <p class="alert"><?= esc(session('error')) ?></p>
     <?php elseif (session('errors') !== null) : ?>
         <?php if (is_array(session('errors'))) : ?>
             <?php foreach (session('errors') as $error) : ?>
-                <p><?= esc($error) ?></p>
+                <p class="alert"><?= esc($error) ?></p>
             <?php endforeach ?>
         <?php else : ?>
-            <p><?= esc(session('errors')) ?></p>
+            <p class="alert"><?= esc(session('errors')) ?></p>
         <?php endif ?>
     <?php endif ?>
 
     <?php if (session('message') !== null) : ?>
-        <p><?= esc(session('message')) ?></p>
+        <p class="notice"><?= esc(session('message')) ?></p>
     <?php endif ?>
 
     <form action="<?= url_to('login') ?>" method="post">
