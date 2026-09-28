@@ -1,64 +1,100 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <style>
-        body { font-family: sans-serif; max-width: 30em; margin: 3rem auto; padding: 0 1rem; }
-        h1 { font-size: 1.5rem; }
-        form { display: flex; flex-direction: column; gap: .6rem; }
-        label { font-weight: bold; }
-        input, button { font: inherit; padding: .5rem; border: 1px solid #aaa; border-radius: 4px; }
-        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
-        button:hover { background: #1d4ed8; }
-        .notice { background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; padding: .5rem; border-radius: 4px; }
-        .alert { background: #fef2f2; border: 1px solid #f87171; color: #991b1b; padding: .5rem; border-radius: 4px; }
-        .notice-temp { background: #e0f2fe; border: 1px solid #38bdf8; color: #075985; padding: .5rem; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <p class="notice-temp"><strong>Temporary placeholder frontend.</strong> This page will be replaced by a proper design.</p>
-    <h1>Log in</h1>
+<?php
 
-    <?php if (session('error') !== null) : ?>
-        <p class="alert"><?= esc(session('error')) ?></p>
-    <?php elseif (session('errors') !== null) : ?>
-        <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
-                <p class="alert"><?= esc($error) ?></p>
+$title = 'Masuk';
+
+echo view('partials/header', ['title' => $title, 'activeTab' => 'login']);
+
+$error = session('error');
+$errors = session('errors');
+$fieldErrors = is_array($errors) ? $errors : [];
+?>
+
+<section class="auth-card" aria-labelledby="auth-title">
+    <span class="auth-card__eyebrow">Akses Akun Digital</span>
+    <h2 class="auth-card__title" id="auth-title">Selamat Datang di Lokapren</h2>
+    <p class="auth-card__lead">Akses kurasi kriya terbaik langsung dari sanggar budaya Magelang.</p>
+
+    <?php if ($error !== null || $fieldErrors !== []) : ?>
+        <ul class="notice-stack">
+            <?php if ($error !== null) : ?>
+                <li class="notice notice--error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.3v.2"/>
+                    </svg>
+                    <span><?= esc($error) ?></span>
+                </li>
+            <?php endif ?>
+
+            <?php foreach ($fieldErrors as $message) : ?>
+                <li class="notice notice--error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.3v.2"/>
+                    </svg>
+                    <span><?= esc($message) ?></span>
+                </li>
             <?php endforeach ?>
-        <?php else : ?>
-            <p class="alert"><?= esc(session('errors')) ?></p>
-        <?php endif ?>
+        </ul>
     <?php endif ?>
 
     <?php if (session('message') !== null) : ?>
-        <p class="notice"><?= esc(session('message')) ?></p>
+        <ul class="notice-stack">
+            <li class="notice notice--info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"/><path d="m8.5 12.2 2.4 2.4 4.6-4.9"/>
+                </svg>
+                <span><?= esc(session('message')) ?></span>
+            </li>
+        </ul>
     <?php endif ?>
 
-    <form action="<?= url_to('login') ?>" method="post">
+    <nav class="tabs" aria-label="Pilih akses akun">
+        <a class="tabs__item" href="<?= base_url('login') ?>" aria-current="page">Masuk (Login)</a>
+        <a class="tabs__item" href="<?= base_url('register') ?>">Daftar Akun Baru</a>
+    </nav>
+
+    <form class="form" action="<?= base_url('login') ?>" method="post" novalidate>
         <?= csrf_field() ?>
 
-        <label for="email">Email</label>
-        <br>
-        <input type="email" id="email" name="email" inputmode="email" autocomplete="email" value="<?= old('email') ?>" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['email']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="email">Email</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="email" id="email" name="email" inputmode="email"
+                       autocomplete="email" placeholder="Masukkan email"
+                       value="<?= old('email') ?>" required>
+            </div>
+            <?php if (isset($fieldErrors['email'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['email']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label for="password">Password</label>
-        <br>
-        <input type="password" id="password" name="password" autocomplete="current-password" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['password']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="password">Password Akun</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="password" id="password" name="password"
+                       autocomplete="current-password" placeholder="Ketik password Anda" required>
+            </div>
+            <?php if (isset($fieldErrors['password'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['password']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label>
-            <input type="checkbox" name="remember"<?php if (old('remember')): ?> checked<?php endif ?>>
-            Remember me
-        </label>
-        <br><br>
+        <div class="form__meta">
+            <label class="checkbox" for="remember">
+                <input type="checkbox" id="remember" name="remember" value="1"<?= old('remember') ? ' checked' : '' ?>>
+                <span>Ingat saya</span>
+            </label>
+        </div>
 
-        <button type="submit">Log in</button>
+        <button class="form__submit" type="submit">Masuk ke Lokapren</button>
     </form>
 
-    <p>Don't have an account? <a href="<?= url_to('register') ?>">Register</a></p>
-</body>
-</html>
+    <p class="form__alt">
+        Belum punya akun? <a href="<?= base_url('register') ?>">Buat Akun Baru</a>
+    </p>
+</section>
+
+<?php echo view('partials/footer'); ?>

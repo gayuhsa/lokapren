@@ -1,73 +1,127 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
-    <style>
-        body { font-family: sans-serif; max-width: 30em; margin: 3rem auto; padding: 0 1rem; }
-        h1 { font-size: 1.5rem; }
-        form { display: flex; flex-direction: column; gap: .6rem; }
-        label { font-weight: bold; }
-        input, select, button { font: inherit; padding: .5rem; border: 1px solid #aaa; border-radius: 4px; }
-        button { background: #2563eb; color: #fff; border: none; cursor: pointer; }
-        button:hover { background: #1d4ed8; }
-        .notice { background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; padding: .5rem; border-radius: 4px; }
-        .alert { background: #fef2f2; border: 1px solid #f87171; color: #991b1b; padding: .5rem; border-radius: 4px; }
-        .notice-temp { background: #e0f2fe; border: 1px solid #38bdf8; color: #075985; padding: .5rem; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <p class="notice-temp"><strong>Temporary placeholder frontend.</strong> This page will be replaced by a proper design.</p>
-    <h1>Create an account</h1>
+<?php
 
-    <?php if (session('error') !== null) : ?>
-        <p class="alert"><?= esc(session('error')) ?></p>
-    <?php elseif (session('errors') !== null) : ?>
-        <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
-                <p class="alert"><?= esc($error) ?></p>
+$title = 'Daftar Akun Baru';
+
+echo view('partials/header', ['title' => $title, 'activeTab' => 'register']);
+
+$error = session('error');
+$errors = session('errors');
+$fieldErrors = is_array($errors) ? $errors : [];
+?>
+
+<section class="auth-card" aria-labelledby="auth-title">
+    <span class="auth-card__eyebrow">Akses Akun Digital</span>
+    <h2 class="auth-card__title" id="auth-title">Daftar Akun Baru</h2>
+    <p class="auth-card__lead">
+        Buat akun untuk menjelajahi kurasi kriya adiluhung Magelang.
+    </p>
+
+    <?php if ($error !== null || $fieldErrors !== []) : ?>
+        <ul class="notice-stack">
+            <?php if ($error !== null) : ?>
+                <li class="notice notice--error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.3v.2"/>
+                    </svg>
+                    <span><?= esc($error) ?></span>
+                </li>
+            <?php endif ?>
+
+            <?php foreach ($fieldErrors as $message) : ?>
+                <li class="notice notice--error">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.3v.2"/>
+                    </svg>
+                    <span><?= esc($message) ?></span>
+                </li>
             <?php endforeach ?>
-        <?php else : ?>
-            <p class="alert"><?= esc(session('errors')) ?></p>
-        <?php endif ?>
+        </ul>
     <?php endif ?>
 
-    <form action="<?= url_to('register') ?>" method="post">
+    <nav class="tabs" aria-label="Pilih akses akun">
+        <a class="tabs__item" href="<?= base_url('login') ?>">Masuk (Login)</a>
+        <a class="tabs__item" href="<?= base_url('register') ?>" aria-current="page">Daftar Akun Baru</a>
+    </nav>
+
+    <form class="form" action="<?= base_url('register') ?>" method="post" novalidate>
         <?= csrf_field() ?>
 
-        <label for="email">Email</label>
-        <br>
-        <input type="email" id="email" name="email" inputmode="email" autocomplete="email" value="<?= old('email') ?>" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['username']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="username">Nama Pengguna</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="text" id="username" name="username" autocomplete="username"
+                       placeholder="Nama yang akan tampil di Lokapren"
+                       value="<?= old('username') ?>" required>
+            </div>
+            <?php if (isset($fieldErrors['username'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['username']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label for="username">Username</label>
-        <br>
-        <input type="text" id="username" name="username" autocomplete="username" value="<?= old('username') ?>" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['email']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="email">Email</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="email" id="email" name="email" inputmode="email"
+                       autocomplete="email" placeholder="Masukkan email aktif"
+                       value="<?= old('email') ?>" required>
+            </div>
+            <?php if (isset($fieldErrors['email'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['email']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label for="password">Password</label>
-        <br>
-        <input type="password" id="password" name="password" autocomplete="new-password" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['role']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="role">Daftar sebagai</label>
+            </div>
+            <div class="field__control">
+                <select class="input" id="role" name="role" required>
+                    <option value="">Pilih peran akun</option>
+                    <option value="customer"<?= old('role') === 'customer' ? ' selected' : '' ?>>Pembeli (Customer)</option>
+                    <option value="seller"<?= old('role') === 'seller' ? ' selected' : '' ?>>Pengrajin / Penjual (Seller)</option>
+                </select>
+            </div>
+            <?php if (isset($fieldErrors['role'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['role']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label for="password_confirm">Confirm password</label>
-        <br>
-        <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['password']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="password">Password Akun</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="password" id="password" name="password"
+                       autocomplete="new-password" placeholder="Minimal 8 karakter" required>
+            </div>
+            <?php if (isset($fieldErrors['password'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['password']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <label for="role">I want to join as a</label>
-        <br>
-        <select id="role" name="role" required>
-            <option value="">Select a role</option>
-            <option value="customer"<?php if (old('role') === 'customer'): ?> selected<?php endif ?>>Customer</option>
-            <option value="seller"<?php if (old('role') === 'seller'): ?> selected<?php endif ?>>Seller</option>
-        </select>
-        <br><br>
+        <div class="field<?= isset($fieldErrors['password_confirm']) ? ' field--invalid' : '' ?>">
+            <div class="field__head">
+                <label class="field__label" for="password_confirm">Ulangi Password</label>
+            </div>
+            <div class="field__control">
+                <input class="input" type="password" id="password_confirm" name="password_confirm"
+                       autocomplete="new-password" placeholder="Ketik ulang password" required>
+            </div>
+            <?php if (isset($fieldErrors['password_confirm'])) : ?>
+                <p class="field__error"><?= esc($fieldErrors['password_confirm']) ?></p>
+            <?php endif ?>
+        </div>
 
-        <button type="submit">Register</button>
+        <button class="form__submit" type="submit">Daftar ke Lokapren</button>
     </form>
 
-    <p>Already have an account? <a href="<?= url_to('login') ?>">Log in</a></p>
-</body>
-</html>
+    <p class="form__alt">
+        Sudah punya akun? <a href="<?= base_url('login') ?>">Masuk</a>
+    </p>
+</section>
+
+<?php echo view('partials/footer'); ?>

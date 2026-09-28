@@ -1,0 +1,213 @@
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+    background: var(--cream-soft);
+    border-bottom: 1px solid var(--line);
+}
+
+.masthead__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 84px;
+    padding: 14px 0;
+}
+
+.brand {
+    display: inline-flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand:hover,
+.brand:focus-visible {
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand__name {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+}
+
+.brand__tag {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.masthead__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.masthead__nav a,
+.masthead__nav span {
+    display: block;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--brown);
+}
+
+.masthead__nav a:hover,
+.masthead__nav a:focus-visible {
+    background: var(--cream-deep);
+    color: var(--ink);
+    text-decoration: none;
+}
+
+/* A nav entry the application has no route for yet. */
+.masthead__nav span {
+    color: var(--muted);
+    cursor: default;
+}
+
+/* --------------------------------------------------------------------- hero */
+
+.hero {
+    padding-top: 8px;
+}
+
+.chip {
+    display: inline-block;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--forest-soft);
+    color: var(--forest-ink);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.chip--accent {
+    background: var(--peach);
+    color: var(--terracotta);
+}
+
+.hero__title {
+    margin: 22px 0 0;
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 46px);
+    font-weight: 700;
+    line-height: 1.14;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+}
+
+.hero__lead {
+    max-width: 46ch;
+    margin: 20px 0 0;
+    font-size: 17px;
+    line-height: 1.75;
+}
+
+.trust {
+    display: grid;
+    gap: 26px;
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.trust__item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.trust__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--forest);
+}
+
+.trust__icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.trust__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 650;
+    color: var(--ink);
+}
+
+.trust__text {
+    margin: 4px 0 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+}
+
+.partner-band {
+    margin-top: 40px;
+    padding: 22px 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--cream-deep);
+}
+
+.partner-band__label {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.partner-band__logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin-top: 14px;
+    padding: 0;
+    list-style: none;
+}
+
+.partner-band__logos li {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.tag-mint {
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--mint);
+    color: var(--forest-ink);
+    text-transform: none;
+    letter-spacing: 0.02em;
+}
+
+
+@media (max-width: 640px) {
+    .masthead__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+}
