@@ -49,6 +49,10 @@ class AuthGroups extends ShieldAuthGroups
             'title'       => 'Seller',
             'description' => 'Users who sell products on the marketplace.',
         ],
+        'admin' => [
+            'title'       => 'Admin',
+            'description' => 'Marketplace administrators who moderate sellers, products, and reviews.',
+        ],
     ];
 
     /**
@@ -59,7 +63,14 @@ class AuthGroups extends ShieldAuthGroups
      *
      * If a permission is not listed here it cannot be used.
      */
-    public array $permissions = [];
+    public array $permissions = [
+        'stores.manage'       => 'Manage own store profile and storefront',
+        'products.manage'     => 'Create and manage own products and variants',
+        'orders.manage'       => 'Manage orders belonging to own store',
+        'store_posts.manage'  => 'Create and manage own storefront posts',
+        'conversations.reply' => 'Reply to customer conversations for own store',
+        'reviews.moderate'    => 'Moderate product reviews',
+    ];
 
     /**
      * --------------------------------------------------------------------
@@ -69,5 +80,19 @@ class AuthGroups extends ShieldAuthGroups
      *
      * This defines group-level permissions.
      */
-    public array $matrix = [];
+    public array $matrix = [
+        'seller' => [
+            'stores.manage'       => 'store',
+            'products.manage'     => 'store',
+            'orders.manage'       => 'store',
+            'store_posts.manage'  => 'store',
+            'conversations.reply' => 'store',
+        ],
+        'admin' => [
+            'stores.manage'    => 'store',
+            'products.manage'  => 'store',
+            'orders.manage'    => 'store',
+            'reviews.moderate' => 'store',
+        ],
+    ];
 }
