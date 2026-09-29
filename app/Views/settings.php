@@ -17,6 +17,8 @@
         .notice { background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; padding: .5rem; border-radius: 4px; }
         .alert { background: #fef2f2; border: 1px solid #f87171; color: #991b1b; padding: .5rem; border-radius: 4px; }
         .notice-temp { background: #e0f2fe; border: 1px solid #38bdf8; color: #075985; padding: .5rem; border-radius: 4px; }
+        .hint { margin: -.2rem 0 0; font-size: .85rem; color: #555; }
+        input[disabled] { background: #f3f4f6; color: #555; }
     </style>
 </head>
 <body>
@@ -52,11 +54,19 @@
         <label for="email">Email</label>
         <input type="email" id="email" name="email" inputmode="email" autocomplete="email" value="<?= esc(old('email', $currentEmail)) ?>" required>
 
-        <label for="role">Role</label>
-        <select id="role" name="role">
-            <option value="customer"<?= old('role', $currentRole) === 'customer' ? ' selected' : '' ?>>Customer</option>
-            <option value="seller"<?= old('role', $currentRole) === 'seller' ? ' selected' : '' ?>>Seller</option>
-        </select>
+        <?php if ($canManageRoles) : ?>
+            <label for="role">Role</label>
+            <select id="role" name="role">
+                <?php foreach ($assignableRoles as $roleValue => $roleTitle) : ?>
+                    <option value="<?= esc($roleValue, 'attr') ?>"<?= old('role', $currentRole) === $roleValue ? ' selected' : '' ?>><?= esc($roleTitle) ?></option>
+                <?php endforeach ?>
+            </select>
+            <p class="hint">Anda memiliki izin <code>users.manage</code> sehingga dapat mengubah role akun ini.</p>
+        <?php else : ?>
+            <label for="role">Role</label>
+            <input type="text" id="role" value="<?= esc($currentRole) ?>" disabled>
+            <p class="hint">Role hanya dapat diubah oleh administrator yang memiliki izin <code>users.manage</code>.</p>
+        <?php endif ?>
 
         <button type="submit">Simpan Perubahan</button>
     </form>

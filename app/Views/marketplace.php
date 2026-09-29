@@ -45,7 +45,8 @@
     <p class="notice-temp"><strong>Temporary placeholder frontend.</strong> This page will be replaced by a proper design.</p>
     <div class="top-actions">
         <a class="settings-link" href="<?= esc(site_url('settings')) ?>">Pengaturan</a>
-        <form class="logout" action="<?= url_to('logout') ?>" method="get">
+        <form class="logout" action="<?= esc(site_url('logout'), 'attr') ?>" method="post">
+            <?= csrf_field() ?>
             <button type="submit" class="logout">Log out</button>
         </form>
     </div>

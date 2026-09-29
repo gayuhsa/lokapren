@@ -70,15 +70,23 @@ class AuthGroups extends ShieldAuthGroups
         'store_posts.manage'  => 'Create and manage own storefront posts',
         'conversations.reply' => 'Reply to customer conversations for own store',
         'reviews.moderate'    => 'Moderate product reviews',
+        'users.manage'        => 'Assign and change account roles',
     ];
 
     /**
      * --------------------------------------------------------------------
      * Permissions Matrix
      * --------------------------------------------------------------------
-     * Maps permissions to groups.
+     * Maps groups to the permissions they hold.
      *
      * This defines group-level permissions.
+     *
+     * NOTE: this Shield version resolves a group against the *list* of
+     * permission names in its matrix entry. The pre-existing
+     * `'permission' => 'scope'` map entries below are therefore never matched
+     * and grant nothing; they are left as-is for now because converting them
+     * would start granting permissions that have never actually been active.
+     * `users.manage` is declared in the list form so the role gate is live.
      */
     public array $matrix = [
         'seller' => [
@@ -89,6 +97,9 @@ class AuthGroups extends ShieldAuthGroups
             'conversations.reply' => 'store',
         ],
         'admin' => [
+            'users.manage',
+
+            // Legacy map-form entries; see the note above.
             'stores.manage'    => 'store',
             'products.manage'  => 'store',
             'orders.manage'    => 'store',

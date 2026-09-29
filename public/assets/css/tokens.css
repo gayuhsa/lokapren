@@ -1,0 +1,51 @@
+/*
+ * Lokapren — design tokens
+ *
+ * Sampled from the "Autentikasi & Masuk Akun Lokapren" mockup in scratchpad/.
+ *
+ * This file declares custom properties only, so it is safe to link first on
+ * every page. It contains no element or component rules.
+ *
+ * Load order for any page:
+ *   1. assets/css/tokens.css          (this file)
+ *   2. assets/css/site.css            (reset + base element styles)
+ *   3. assets/css/partials/*.css      (site chrome)
+ *   4. page-specific stylesheet
+ */
+
+:root {
+    /* Surfaces */
+    --cream: #fcf2e6;
+    --cream-deep: #f8eee2;
+    --cream-soft: #fdfbf7;
+    --card: #ffffff;
+    --peach: #fdf1eb;
+
+    /* Brand */
+    --terracotta: #9f3c16;
+    --terracotta-deep: #7e2f10;
+    --forest: #3f6653;
+    --forest-ink: #436b58;
+    --forest-soft: #d0ecd7;
+    --mint: #beead1;
+
+    /* Text */
+    --ink: #1f1b14;
+    --brown: #57423b;
+    --muted: #9a8d89;
+
+    /* Lines */
+    --line: #efe6da;
+    --line-strong: #e7dbd0;
+    --field-line: #f1f1f1;
+
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 18px;
+
+    --shadow-card: 0 18px 40px -28px rgba(31, 27, 20, 0.45);
+    --shadow-soft: 0 1px 2px rgba(31, 27, 20, 0.04);
+
+    --sans: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+}

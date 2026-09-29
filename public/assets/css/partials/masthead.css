@@ -1,0 +1,103 @@
+/*
+ * Lokapren — site masthead
+ *
+ * Scoped to the markup in app/Views/partials/masthead.php.
+ * Consumes the tokens declared in ../tokens.css and ../site.css.
+ */
+
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+    background: var(--cream-soft);
+    border-bottom: 1px solid var(--line);
+}
+
+.masthead__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    min-height: 84px;
+    padding: 14px 0;
+}
+
+.brand {
+    display: inline-flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand:hover,
+.brand:focus-visible {
+    text-decoration: none;
+    color: var(--ink);
+}
+
+.brand__name {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+}
+
+.brand__tag {
+    margin-top: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.masthead__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.masthead__nav a,
+.masthead__nav span {
+    display: block;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--brown);
+}
+
+.masthead__nav a:hover,
+.masthead__nav a:focus-visible {
+    background: var(--cream-deep);
+    color: var(--ink);
+    text-decoration: none;
+}
+
+/* The entry for the page currently being viewed. */
+.masthead__nav a[aria-current="page"] {
+    background: var(--cream-deep);
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* A nav entry the application has no route for yet. */
+.masthead__nav span {
+    color: var(--muted);
+    cursor: default;
+}
+
+/* --------------------------------------------------------------- responsive */
+
+@media (max-width: 640px) {
+    .masthead__inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+}

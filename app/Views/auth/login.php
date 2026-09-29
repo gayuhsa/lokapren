@@ -2,7 +2,7 @@
 
 $title = 'Masuk';
 
-echo view('partials/header', ['title' => $title, 'activeTab' => 'login']);
+echo view('auth/partials/shell-start', ['title' => $title]);
 
 $error = session('error');
 $errors = session('errors');
@@ -97,4 +97,4 @@ $fieldErrors = is_array($errors) ? $errors : [];
     </p>
 </section>
 
-<?php echo view('partials/footer'); ?>
+<?php echo view('auth/partials/shell-end'); ?>

@@ -1,5 +1,9 @@
-    </div>
-</main>
+<?php
+
+/**
+ * Site-wide footer. Shared by every page, auth and public alike.
+ */
+?>
 
 <footer class="site-footer">
     <div class="lok-shell">
@@ -52,6 +56,3 @@
         </div>
     </div>
 </footer>
-
-</body>
-</html>

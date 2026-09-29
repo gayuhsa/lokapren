@@ -33,24 +33,86 @@ final class AuthPageTest extends CIUnitTestCase
         $result->assertSee('assets/css/auth.css');
     }
 
+    /**
+     * The shared layer, in the order document-start.php emits it.
+     *
+     * @return array<int, string>
+     */
+    private function sharedStylesheets(): array
+    {
+        return [
+            'assets/css/tokens.css',
+            'assets/css/site.css',
+            'assets/css/partials/masthead.css',
+            'assets/css/partials/footer.css',
+        ];
+    }
+
     public function testAuthPagesLinkEveryComponentStylesheet(): void
     {
         foreach (['/login', '/register'] as $url) {
             $body = $this->get($url)->getBody();
 
+            foreach ($this->sharedStylesheets() as $sheet) {
+                $this->assertStringContainsString($sheet, $body);
+            }
+
             $this->assertStringContainsString('assets/css/auth.css', $body);
-            $this->assertStringContainsString('assets/css/partials/header.css', $body);
-            $this->assertStringContainsString('assets/css/partials/footer.css', $body);
+        }
+    }
+
+    public function testSharedStylesheetsLoadBeforeThePageStylesheet(): void
+    {
+        foreach (['/login', '/register'] as $url) {
+            $body  = $this->get($url)->getBody();
+            $last  = 0;
+            $order = array_merge($this->sharedStylesheets(), ['assets/css/auth.css']);
+
+            foreach ($order as $sheet) {
+                $at = strpos($body, $sheet);
+
+                $this->assertNotFalse($at, "{$sheet} not linked on {$url}");
+                $this->assertGreaterThan($last, $at, "{$sheet} loaded out of order on {$url}");
+                $last = $at;
+            }
         }
     }
 
     public function testComponentStylesheetsExistAndAreLinkedFromDisk(): void
     {
-        $root = ROOTPATH . 'public/assets/css';
+        $root = ROOTPATH . 'public/';
+        $sheets = array_merge($this->sharedStylesheets(), ['assets/css/auth.css']);
 
-        foreach (['auth.css', 'partials/header.css', 'partials/footer.css'] as $file) {
-            $this->assertFileExists($root . '/' . $file);
+        foreach ($sheets as $file) {
+            $this->assertFileExists($root . $file);
         }
+    }
+
+    public function testTheObsoleteCombinedHeaderStylesheetIsGone(): void
+    {
+        $root = ROOTPATH . 'public/assets/css/partials';
+
+        $this->assertFileDoesNotExist($root . '/header.css');
+    }
+
+    public function testAuthPagesUseTheSharedSiteChrome(): void
+    {
+        foreach (['/login', '/register'] as $url) {
+            $result = $this->get($url);
+
+            $result->assertSee('class="masthead"');
+            $result->assertSee('class="site-footer"');
+            $result->assertSee('Bergabung bersama 480+ Empu');
+        }
+    }
+
+    public function testUnroutedNavSectionsRenderAsInertTextNotDeadLinks(): void
+    {
+        $body = $this->get('/login')->getBody();
+
+        // "Galeri" has no route yet, so it must not be an anchor.
+        $this->assertStringNotContainsString('>Galeri</a>', $body);
+        $this->assertStringContainsString('<span>Galeri</span>', $body);
     }
 
     public function testLoginPageNoLongerShowsTheTemporaryPlaceholder(): void
