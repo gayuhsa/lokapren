@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Pahatan Kinara">
+  <title>Pahatan Kinara</title>
+  <rect width="480" height="320" fill="#F6EFE4"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#B8763F" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <path d="M40 20v82" stroke="#B8763F" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M20 46h40l-7 20H27z" fill="#B8763F" opacity="0.85"/>
+    <path d="M26 96h28" stroke="#B8763F" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(270 44)">
+    <circle cx="18" cy="40" r="6" fill="#B8763F"/><circle cx="48" cy="52" r="5" fill="#B8763F"/><circle cx="30" cy="72" r="7" fill="#B8763F"/>
+    <circle cx="60" cy="84" r="4" fill="#B8763F"/><circle cx="12" cy="90" r="5" fill="#B8763F"/>
+    <path d="M6 22c24-8 50-8 74 0" fill="none" stroke="#B8763F" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#B8763F" opacity="0.8">Pahatan Kinara</text>
+</svg>

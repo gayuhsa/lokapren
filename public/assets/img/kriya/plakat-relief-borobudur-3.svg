@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Staging-workshop">
+  <title>Staging-workshop</title>
+  <rect width="480" height="320" fill="#F5EADC"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#8C5A3C" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <rect x="16" y="20" width="56" height="82" rx="4" fill="none" stroke="#8C5A3C" stroke-width="3"/>
+    <rect x="24" y="28" width="40" height="66" fill="#8C5A3C" opacity="0.18"/>
+    <path d="M24 78l12-16 10 11 9-9 9 14z" fill="#8C5A3C"/>
+  </g>
+  <g transform="translate(270 44)">
+    <path d="M10 78c10-26 22-38 40-42" fill="none" stroke="#8C5A3C" stroke-width="3" stroke-linecap="round"/>
+    <path d="M18 58c6-2 12-2 18 0M24 46c6-2 12-2 18 0M30 34c6-2 12-2 18 0" stroke="#8C5A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="62" cy="94" r="10" fill="none" stroke="#8C5A3C" stroke-width="3"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#8C5A3C" opacity="0.8">Staging-workshop</text>
+</svg>

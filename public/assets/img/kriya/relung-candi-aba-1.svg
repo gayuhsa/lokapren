@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Relung Candi Aba">
+  <title>Relung Candi Aba</title>
+  <rect width="480" height="320" fill="#F4E8DA"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#BE6E45" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <path d="M12 48h56c0 26-12 42-28 42S12 74 12 48z" fill="#BE6E45" opacity="0.2"/>
+    <path d="M12 48h56c0 26-12 42-28 42S12 74 12 48z" fill="none" stroke="#BE6E45" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M6 48h68" stroke="#BE6E45" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(270 44)">
+    <path d="M14 92l14-16 14 16 14-16 14 16" fill="none" stroke="#BE6E45" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="14" y="24" width="60" height="8" rx="3" fill="#BE6E45"/>
+    <path d="M14 38h60" stroke="#BE6E45" stroke-width="2"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#BE6E45" opacity="0.8">Relung Candi Aba</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Detail Pahat">
+  <title>Detail Pahat</title>
+  <rect width="480" height="320" fill="#EFE0CE"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#A85A38" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <path d="M10 78c10-26 22-38 40-42" fill="none" stroke="#A85A38" stroke-width="3" stroke-linecap="round"/>
+    <path d="M18 58c6-2 12-2 18 0M24 46c6-2 12-2 18 0M30 34c6-2 12-2 18 0" stroke="#A85A38" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <circle cx="62" cy="94" r="10" fill="none" stroke="#A85A38" stroke-width="3"/>
+  </g>
+  <g transform="translate(270 44)">
+    <circle cx="18" cy="40" r="6" fill="#A85A38"/><circle cx="48" cy="52" r="5" fill="#A85A38"/><circle cx="30" cy="72" r="7" fill="#A85A38"/>
+    <circle cx="60" cy="84" r="4" fill="#A85A38"/><circle cx="12" cy="90" r="5" fill="#A85A38"/>
+    <path d="M6 22c24-8 50-8 74 0" fill="none" stroke="#A85A38" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#A85A38" opacity="0.8">Detail Pahat</text>
+</svg>

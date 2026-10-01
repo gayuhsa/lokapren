@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Detail Pahat">
+  <title>Detail Pahat</title>
+  <rect width="480" height="320" fill="#EFE7D8"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#7E5A34" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <circle cx="40" cy="62" r="28" fill="none" stroke="#7E5A34" stroke-width="4"/>
+    <circle cx="40" cy="62" r="17" fill="none" stroke="#7E5A34" stroke-width="2" opacity="0.6"/>
+    <circle cx="40" cy="62" r="6" fill="#7E5A34"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#7E5A34" opacity="0.8">Detail Pahat</text>
+</svg>

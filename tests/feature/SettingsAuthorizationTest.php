@@ -10,6 +10,7 @@ use CodeIgniter\Shield\Test\AuthenticationTesting;
 use CodeIgniter\Test\CIUnitTestCase;
 use CodeIgniter\Test\DatabaseTestTrait;
 use CodeIgniter\Test\FeatureTestTrait;
+use Tests\Support\PostsWithCsrf;
 
 /**
  * Settings must never let a user change their own role. Role changes are gated
@@ -23,6 +24,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
     use AuthenticationTesting;
     use DatabaseTestTrait;
     use FeatureTestTrait;
+    use PostsWithCsrf;
 
     protected $migrate = true;
 
@@ -63,7 +65,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
     {
         $user = $this->makeUser('escalator', 'customer');
 
-        $this->actingAs($user)->post('/settings', [
+        $this->actingAs($user)->postWithCsrf('/settings', [
             'username' => 'escalator',
             'email'    => 'escalator@example.com',
             'role'     => 'admin',
@@ -77,7 +79,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
     {
         $user = $this->makeUser('aspirant', 'customer');
 
-        $this->actingAs($user)->post('/settings', [
+        $this->actingAs($user)->postWithCsrf('/settings', [
             'username' => 'aspirant',
             'email'    => 'aspirant@example.com',
             'role'     => 'seller',
@@ -103,7 +105,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
         // request carries the admin's own details.
         $admin = $this->makeUser('modadmin', 'admin');
 
-        $result = $this->actingAs($admin)->post('/settings', [
+        $result = $this->actingAs($admin)->postWithCsrf('/settings', [
             'username' => 'modadmin',
             'email'    => 'modadmin@example.com',
             'role'     => 'seller',
@@ -117,7 +119,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
     {
         $admin = $this->makeUser('strictadmin', 'admin');
 
-        $this->actingAs($admin)->post('/settings', [
+        $this->actingAs($admin)->postWithCsrf('/settings', [
             'username' => 'strictadmin',
             'email'    => 'strictadmin@example.com',
             'role'     => 'superadmin-does-not-exist',
@@ -131,7 +133,7 @@ final class SettingsAuthorizationTest extends CIUnitTestCase
     {
         $user = $this->makeUser('editor', 'customer');
 
-        $result = $this->actingAs($user)->post('/settings', [
+        $result = $this->actingAs($user)->postWithCsrf('/settings', [
             'username' => 'editor',
             'email'    => 'renamed@example.com',
             'role'     => '',

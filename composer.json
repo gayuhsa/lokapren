@@ -1,14 +1,8 @@
 {
-    "name": "codeigniter4/appstarter",
-    "description": "CodeIgniter4 starter app",
+    "name": "lokapren/marketplace",
+    "description": "Lokapren - Indonesian city UMKM marketplace on CodeIgniter 4",
     "license": "MIT",
     "type": "project",
-    "homepage": "https://codeigniter.com",
-    "support": {
-        "forum": "https://forum.codeigniter.com/",
-        "source": "https://github.com/codeigniter4/CodeIgniter4",
-        "slack": "https://codeigniterchat.slack.com"
-    },
     "require": {
         "php": "^8.2",
         "codeigniter4/framework": "^4.7",
@@ -39,6 +33,13 @@
         "sort-packages": true
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "migrate": "php spark migrate --all",
+        "rollback": "php spark migrate:rollback --all",
+        "seed": "php spark db:seed DatabaseSeeder",
+        "migrate:seed": [
+            "@migrate",
+            "@seed"
+        ]
     }
 }

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Besek Bambu">
+  <title>Besek Bambu</title>
+  <rect width="480" height="320" fill="#EFE7D6"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#6B8E6B" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <path d="M12 48h56l-7 46H19z" fill="#6B8E6B" opacity="0.18"/>
+    <path d="M12 48h56l-7 46H19z" fill="none" stroke="#6B8E6B" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M18 62h44M20 76h40M22 88h36" stroke="#6B8E6B" stroke-width="2"/>
+    <path d="M22 48c0-11 7-18 18-18s18 7 18 18" fill="none" stroke="#6B8E6B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(270 44)">
+    <path d="M6 44c9-11 18-11 27 0s18 11 27 0 18-11 27 0" fill="none" stroke="#6B8E6B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 68c9-11 18-11 27 0s18 11 27 0 18-11 27 0" fill="none" stroke="#6B8E6B" stroke-width="3" stroke-linecap="round"/>
+    <path d="M6 92c9-11 18-11 27 0s18 11 27 0 18-11 27 0" fill="none" stroke="#6B8E6B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#6B8E6B" opacity="0.8">Besek Bambu</text>
+</svg>

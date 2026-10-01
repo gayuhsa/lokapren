@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" width="480" height="320" role="img" aria-label="Besek Roket Bambu">
+  <title>Besek Roket Bambu</title>
+  <rect width="480" height="320" fill="#F4EFE2"/>
+  <rect x="14" y="14" width="452" height="248" fill="none" stroke="#7E9A5B" stroke-width="1.5" opacity="0.28" rx="6"/>
+  <g transform="translate(120 44)">
+    <path d="M12 48h56l-7 46H19z" fill="#7E9A5B" opacity="0.18"/>
+    <path d="M12 48h56l-7 46H19z" fill="none" stroke="#7E9A5B" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M18 62h44M20 76h40M22 88h36" stroke="#7E9A5B" stroke-width="2"/>
+    <path d="M22 48c0-11 7-18 18-18s18 7 18 18" fill="none" stroke="#7E9A5B" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(270 44)">
+    <circle cx="18" cy="40" r="6" fill="#7E9A5B"/><circle cx="48" cy="52" r="5" fill="#7E9A5B"/><circle cx="30" cy="72" r="7" fill="#7E9A5B"/>
+    <circle cx="60" cy="84" r="4" fill="#7E9A5B"/><circle cx="12" cy="90" r="5" fill="#7E9A5B"/>
+    <path d="M6 22c24-8 50-8 74 0" fill="none" stroke="#7E9A5B" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <text x="24" y="298" font-family="Georgia, 'Times New Roman', serif" font-size="15" fill="#7E9A5B" opacity="0.8">Besek Roket Bambu</text>
+</svg>

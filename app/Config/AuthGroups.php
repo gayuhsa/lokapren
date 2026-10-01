@@ -81,29 +81,31 @@ class AuthGroups extends ShieldAuthGroups
      *
      * This defines group-level permissions.
      *
-     * NOTE: this Shield version resolves a group against the *list* of
-     * permission names in its matrix entry. The pre-existing
-     * `'permission' => 'scope'` map entries below are therefore never matched
-     * and grant nothing; they are left as-is for now because converting them
-     * would start granting permissions that have never actually been active.
-     * `users.manage` is declared in the list form so the role gate is live.
+     * Each entry is a plain list of permission names. This Shield version
+     * resolves a group with PermissionMatcher against those names, so the older
+     * `'permission' => 'scope'` map form is never matched and silently grants
+     * nothing. Keep the list form.
+     *
+     * Resource scoping is enforced separately in the controllers, by resolving
+     * the caller's own store and comparing it against the row being changed.
+     * See App\Services\StoreAccess.
      */
     public array $matrix = [
+        'customer' => [],
         'seller' => [
-            'stores.manage'       => 'store',
-            'products.manage'     => 'store',
-            'orders.manage'       => 'store',
-            'store_posts.manage'  => 'store',
-            'conversations.reply' => 'store',
+            'stores.manage',
+            'products.manage',
+            'orders.manage',
+            'store_posts.manage',
+            'conversations.reply',
         ],
         'admin' => [
             'users.manage',
-
-            // Legacy map-form entries; see the note above.
-            'stores.manage'    => 'store',
-            'products.manage'  => 'store',
-            'orders.manage'    => 'store',
-            'reviews.moderate' => 'store',
+            'stores.manage',
+            'products.manage',
+            'orders.manage',
+            'reviews.moderate',
+            'conversations.reply',
         ],
     ];
 }
