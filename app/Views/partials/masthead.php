@@ -44,5 +44,21 @@ $navItems = [
                 <?php endforeach ?>
             </ul>
         </nav>
+
+        <div class="masthead__account">
+            <?php if (auth()->loggedIn()) : ?>
+                <span class="masthead__who"><?= esc(auth()->user()->username) ?></span>
+
+                <?php // Logging out is a state change, so it posts a CSRF
+                // token rather than following a link. ?>
+                <form action="<?= site_url('logout') ?>" method="post">
+                    <?= csrf_field() ?>
+                    <button type="submit">Keluar</button>
+                </form>
+            <?php else : ?>
+                <a href="<?= site_url('login') ?>">Masuk</a>
+                <a href="<?= site_url('register') ?>">Daftar</a>
+            <?php endif ?>
+        </div>
     </div>
 </header>

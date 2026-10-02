@@ -1,10 +1,3 @@
-/*
- * Lokapren — site masthead
- *
- * Scoped to the markup in app/Views/partials/masthead.php.
- * Consumes the tokens declared in ../tokens.css and ../site.css.
- */
-
 /* ---------------------------------------------------------------- masthead */
 
 .masthead {
@@ -100,4 +93,38 @@
         align-items: flex-start;
         gap: 14px;
     }
+}
+
+/* Signed-in actions ------------------------------------------------------- */
+
+.masthead__account {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.masthead__who {
+    color: var(--muted);
+}
+
+.masthead__account form {
+    margin: 0;
+}
+
+.masthead__account button {
+    padding: 6px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--brown);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.masthead__account button:hover,
+.masthead__account button:focus-visible {
+    border-color: var(--forest);
+    color: var(--forest);
 }

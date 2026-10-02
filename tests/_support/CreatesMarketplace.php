@@ -28,6 +28,10 @@ trait CreatesMarketplace
 
     protected static int $productSequence = 0;
 
+    protected static int $categorySequence = 0;
+
+    protected static int $variantSequence = 0;
+
     /**
      * @param array<string, mixed> $overrides
      *
@@ -71,7 +75,7 @@ trait CreatesMarketplace
             'store_id'   => $store['id'],
             'name'       => 'Produk Uji ' . self::$productSequence,
             'slug'       => 'produk-uji-' . self::$productSequence,
-            'status'     => 'published',
+            'status'     => 'active',
             'is_featured' => false,
             'created_at' => $now,
             'updated_at' => $now,
@@ -80,5 +84,57 @@ trait CreatesMarketplace
         $this->db->table('products')->insert($row);
 
         return $this->db->table('products')->where('id', $this->db->insertID())->get()->getRowArray();
+    }
+
+    /**
+     * @param array<string, mixed> $overrides
+     *
+     * @return array<string, mixed>
+     */
+    protected function makeCategory(array $overrides = []): array
+    {
+        self::$categorySequence++;
+
+        $now = date('Y-m-d H:i:s');
+
+        $row = array_merge([
+            'name'      => 'Kategori Uji ' . self::$categorySequence,
+            'slug'      => 'kategori-uji-' . self::$categorySequence,
+            'is_active' => true,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $overrides);
+
+        $this->db->table('categories')->insert($row);
+
+        return $this->db->table('categories')->where('id', $this->db->insertID())->get()->getRowArray();
+    }
+
+    /**
+     * @param array<string, mixed> $product
+     * @param array<string, mixed> $overrides
+     *
+     * @return array<string, mixed>
+     */
+    protected function makeVariant(array $product, array $overrides = []): array
+    {
+        self::$variantSequence++;
+
+        $now = date('Y-m-d H:i:s');
+
+        $row = array_merge([
+            'product_id' => $product['id'],
+            'name'       => 'Varian Uji ' . self::$variantSequence,
+            'sku'        => sprintf('UJI-V%05d', self::$variantSequence),
+            'price'      => 100000,
+            'stock'      => 5,
+            'is_active'  => true,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ], $overrides);
+
+        $this->db->table('product_variants')->insert($row);
+
+        return $this->db->table('product_variants')->where('id', $this->db->insertID())->get()->getRowArray();
     }
 }

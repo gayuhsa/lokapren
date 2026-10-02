@@ -10,8 +10,12 @@ service('auth')->routes($routes, ['except' => ['register', 'logout']]);
 $routes->get('register', '\App\Controllers\Auth\RegisterController::registerView', ['as' => 'register']);
 $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAction');
 
-$routes->get('marketplace', '\App\Controllers\Marketplace::index', ['filter' => 'session']);
-$routes->get('product/(:segment)', '\App\Controllers\Product::show/$1', ['filter' => 'session']);
+// The catalogue and product detail are public marketplace pages, so they must
+// not carry Shield's `session` filter: that alias is Shield's SessionAuth,
+// which sends every guest to the login form. Shield still starts its session
+// service on demand, so session-dependent features keep working here.
+$routes->get('marketplace', '\App\Controllers\Marketplace::index');
+$routes->get('product/(:segment)', '\App\Controllers\Product::show/$1');
 $routes->get('settings', '\App\Controllers\Settings::index', ['filter' => 'session']);
 $routes->post('settings', '\App\Controllers\Settings::update', ['filter' => 'session']);
 

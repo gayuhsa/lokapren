@@ -28,6 +28,13 @@ abstract class BaseController extends Controller
     // protected $session;
 
     /**
+     * The database connection shared by controllers and services.
+     *
+     * @var \CodeIgniter\Database\ConnectionInterface
+     */
+    protected $db;
+
+    /**
      * @return void
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -41,5 +48,7 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+
+        $this->db = db_connect();
     }
 }

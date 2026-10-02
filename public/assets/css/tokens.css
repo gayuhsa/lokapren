@@ -1,18 +1,3 @@
-/*
- * Lokapren — design tokens
- *
- * Sampled from the "Autentikasi & Masuk Akun Lokapren" mockup in scratchpad/.
- *
- * This file declares custom properties only, so it is safe to link first on
- * every page. It contains no element or component rules.
- *
- * Load order for any page:
- *   1. assets/css/tokens.css          (this file)
- *   2. assets/css/site.css            (reset + base element styles)
- *   3. assets/css/partials/*.css      (site chrome)
- *   4. page-specific stylesheet
- */
-
 :root {
     /* Surfaces */
     --cream: #fcf2e6;

@@ -1,71 +1,104 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
+use App\Services\CatalogQuery;
+use App\Services\Rupiah;
+
+/**
+ * The catalogue listing page.
+ *
+ * Reads every filter, category and product from the database through
+ * CatalogQuery. An unknown category or sort key is treated as absent rather
+ * than echoed back, so the page can never render an unfiltered result set and
+ * call it filtered.
+ */
 class Marketplace extends BaseController
 {
+    private const PER_PAGE = 12;
+
     public function index(): string
     {
-        $request = $this->request;
+        $catalog = new CatalogQuery($this->db);
 
-        $category = (string) $request->getGet('category') ?: '';
-        $sort     = (string) $request->getGet('sort') ?: '';
-        $min      = $request->getGet('min');
-        $max      = $request->getGet('max');
+        $search = trim((string) $this->request->getGet('q'));
+        $sort   = (string) $this->request->getGet('sort');
+        $page   = (int) $this->request->getGet('page');
 
-        $products = Product::catalog();
-
-        $prices    = array_column($products, 'price');
-        $scaleMin  = (int) floor(min($prices));
-        $scaleMax  = (int) ceil(max($prices));
-
-        if ($category !== '') {
-            $products = array_values(array_filter(
-                $products,
-                static fn ($product) => $product['category'] === $category
-            ));
+        if (! CatalogQuery::isSortable($sort)) {
+            $sort = '';
         }
 
-        $minFilter = is_numeric($min) ? (float) $min : null;
-        $maxFilter = is_numeric($max) ? (float) $max : null;
+        $category = $this->knownCategory($catalog, (string) $this->request->getGet('category'));
+        $store    = $this->knownStore($catalog, (string) $this->request->getGet('store'));
 
-        if ($minFilter !== null) {
-            $products = array_values(array_filter(
-                $products,
-                static fn ($product) => $product['price'] >= $minFilter
-            ));
-        }
+        $min = Rupiah::parse($this->request->getGet('min'));
+        $max = Rupiah::parse($this->request->getGet('max'));
 
-        if ($maxFilter !== null) {
-            $products = array_values(array_filter(
-                $products,
-                static fn ($product) => $product['price'] <= $maxFilter
-            ));
-        }
+        $filters = [
+            'search'   => $search,
+            'category' => $category,
+            'store'    => $store,
+            'min'      => $min,
+            'max'      => $max,
+            'sort'     => $sort,
+        ];
 
-        switch ($sort) {
-            case 'price_asc':
-                usort($products, static fn ($a, $b) => $a['price'] <=> $b['price']);
-                break;
-            case 'price_desc':
-                usort($products, static fn ($a, $b) => $b['price'] <=> $a['price']);
-                break;
-            case 'rating_asc':
-                usort($products, static fn ($a, $b) => $a['rating'] <=> $b['rating']);
-                break;
-            case 'rating_desc':
-                usort($products, static fn ($a, $b) => $b['rating'] <=> $a['rating']);
-                break;
-        }
+        $result = $catalog->paginate($filters, self::PER_PAGE, $page);
 
         return view('marketplace', [
-            'products' => $products,
-            'category' => $category,
-            'sort'     => $sort,
-            'min'      => $min ?? '',
-            'max'      => $max ?? '',
-            'scaleMin' => $scaleMin,
-            'scaleMax' => $scaleMax,
+            'products'      => $result['products'],
+            'featured'      => $catalog->featured(4),
+            'categories'    => $catalog->categories(),
+            'total'         => $result['total'],
+            'pages'         => $result['pages'],
+            'page'          => $result['page'],
+            'bounds'        => $catalog->priceBounds(),
+            'sortOptions'   => CatalogQuery::sortOptions(),
+            'filters'       => $filters,
+            'search'        => $search,
+            'sort'          => $sort,
+            'category'      => $category,
+            'store'         => $store,
+            'min'           => $min,
+            'max'           => $max,
+            'hasFilters'    => $search !== '' || $category !== '' || $store !== ''
+                || $min !== null || $max !== null || $sort !== '',
         ]);
+    }
+
+    /**
+     * Resolves a category slug, ignoring anything not currently browsable.
+     */
+    private function knownCategory(CatalogQuery $catalog, string $slug): string
+    {
+        foreach ($catalog->categories() as $category) {
+            if ($category['slug'] === $slug) {
+                return (string) $category['slug'];
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Resolves a store slug among verified stores.
+     */
+    private function knownStore(CatalogQuery $catalog, string $slug): string
+    {
+        if ($slug === '') {
+            return '';
+        }
+
+        $exists = $this->db->table('stores')
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->where('verification_status', 'verified')
+            ->get()
+            ->getRowArray();
+
+        return $exists === null ? '' : $slug;
     }
 }

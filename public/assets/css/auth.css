@@ -1,13 +1,3 @@
-/*
- * Lokapren — auth pages
- *
- * Scoped to the markup in app/Views/auth/ (login, register) plus the auth-only
- * marketing column rendered by app/Views/auth/partials/hero.php.
- *
- * Consumes ../tokens.css and ../site.css, which must load first, then
- * ../partials/masthead.css and ../partials/footer.css.
- */
-
 /* ------------------------------------------------------------------- layout */
 
 .auth-layout {

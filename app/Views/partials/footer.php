@@ -48,11 +48,13 @@
         </div>
 
         <div class="site-footer__bottom">
-            <p>&copy; <?= date('Y') ?> Lokapren Magelang. Seluruh Hak Cipta Dilindungi Budaya.</p>
-            <ul class="site-footer__legal">
-                <li><a href="<?= base_url('login') ?>">Masuk</a></li>
-                <li><a href="<?= base_url('register') ?>">Daftar Akun Baru</a></li>
-            </ul>
+            <p>&copy; <?= date('Y') ?> Lokapren Magelang. All Rights Reserved.</p>
+            <?php if (!auth()->loggedIn()): ?>
+                <ul class="site-footer__legal">
+                    <li><a href="<?= base_url('login') ?>">Masuk</a></li>
+                    <li><a href="<?= base_url('register') ?>">Daftar Akun Baru</a></li>
+                </ul>
+            <?php endif; ?>
         </div>
     </div>
 </footer>
