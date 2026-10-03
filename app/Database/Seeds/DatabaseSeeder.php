@@ -20,6 +20,7 @@ class DatabaseSeeder extends LokaprenSeeder
         $this->call('CategorySeeder');
         $this->call('StoreSeeder');
         $this->call('ProductSeeder');
+        $this->call('StorePostSeeder');
         $this->call('UserSeeder');
     }
 }

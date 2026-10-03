@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420" role="img" aria-label="Dokumentasi sanggar Batik Tulis Muntilan">
+  <title>Batik Tulis Sanggar Muntilan</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#20161C"/>
+      <stop offset="0.6" stop-color="#191118"/>
+      <stop offset="1" stop-color="#120C10"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.18" r="0.72">
+      <stop offset="0" stop-color="#8C4A5B" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#8C4A5B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#g)"/>
+  <rect width="640" height="420" fill="url(#glow)"/>
+  <g stroke="#8C4A5B" fill="none" stroke-width="2.2" opacity="0.6">
+    <path d="M120 150h400v132H120z" stroke-linejoin="round"/>
+    <path d="M160 190c18-18 36-18 54 0s36 18 54 0 36-18 54 0 36 18 54 0 36-18 54 0"/>
+    <path d="M160 226c18-18 36-18 54 0s36 18 54 0 36-18 54 0 36 18 54 0 36-18 54 0" stroke-width="1.6"/>
+    <path d="M160 262c18-14 36-14 54 0s36 14 54 0 36-14 54 0 36 14 54 0 36-14 54 0" stroke-width="1.4" opacity="0.7"/>
+  </g>
+  <g stroke="#D08C6A" fill="none" stroke-width="2.4" opacity="0.62" stroke-linecap="round">
+    <path d="M292 128v-16"/>
+    <path d="M280 112h24l-6-14h-12z" stroke-linejoin="round"/>
+    <path d="M380 128v-16"/>
+    <path d="M368 112h24l-6-14h-12z" stroke-linejoin="round"/>
+  </g>
+  <g stroke="#7A4A58" fill="none" stroke-width="1.4" opacity="0.5">
+    <rect x="40" y="312" width="560" height="2"/>
+    <path d="M110 344h96M262 344h96M414 344h116"/>
+  </g>
+</svg>

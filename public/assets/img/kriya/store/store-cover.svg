@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420" role="img" aria-label="Dokumentasi workshop pengrajin">
+  <title>Workshop Lokapren</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#33291F"/>
+      <stop offset="0.6" stop-color="#241C14"/>
+      <stop offset="1" stop-color="#17110C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.26" r="0.68">
+      <stop offset="0" stop-color="#B08A55" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#B08A55" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#g)"/>
+  <rect width="640" height="420" fill="url(#glow)"/>
+  <g stroke="#B08A55" fill="none" stroke-width="2.4" opacity="0.5" stroke-linecap="round">
+    <path d="M186 268l52-104 52 104z" stroke-linejoin="round"/>
+    <path d="M238 164v-32"/>
+    <path d="M212 132h52M224 108h28" stroke-width="1.8"/>
+    <path d="M344 268h124M356 268v-92h100v92"/>
+    <path d="M380 176v92M406 176v92M432 176v92" stroke-width="1.6" opacity="0.7"/>
+  </g>
+  <g stroke="#8A6C45" fill="none" stroke-width="1.4" opacity="0.5">
+    <rect x="40" y="300" width="560" height="2"/>
+    <path d="M96 336h108M256 336h84M392 336h152"/>
+  </g>
+</svg>

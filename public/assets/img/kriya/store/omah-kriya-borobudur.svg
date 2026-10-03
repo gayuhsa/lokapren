@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" width="640" height="420" role="img" aria-label="Dokumentasi workshop Omah Kriya Borobudur">
+  <title>Omah Kriya Borobudur</title>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3B2A1C"/>
+      <stop offset="0.55" stop-color="#2A1D14"/>
+      <stop offset="1" stop-color="#1A120C"/>
+    </linearGradient>
+    <radialGradient id="lamp" cx="0.72" cy="0.24" r="0.7">
+      <stop offset="0" stop-color="#C89A5B" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#C89A5B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="420" fill="url(#g)"/>
+  <rect width="640" height="420" fill="url(#lamp)"/>
+  <g stroke="#C89A5B" fill="none" stroke-linecap="round" opacity="0.5">
+    <path d="M96 168c22-26 44-26 66 0s44 26 66 0 44-26 66 0" stroke-width="3"/>
+    <path d="M96 200c22-26 44-26 66 0s44 26 66 0 44-26 66 0" stroke-width="2"/>
+    <path d="M96 232c22-26 44-26 66 0s44 26 66 0 44-26 66 0" stroke-width="2" opacity="0.7"/>
+  </g>
+  <g stroke="#D9B27C" fill="none" stroke-width="2.4" opacity="0.62">
+    <path d="M372 118h96l-10 92h-76z" stroke-linejoin="round"/>
+    <path d="M386 138h68M390 162h60M394 186h52" stroke-width="1.6"/>
+    <path d="M404 118c0-12 6-20 16-20s16 8 16 20" stroke-linecap="round"/>
+    <path d="M404 210h32M456 210h-16" stroke-width="1.6"/>
+  </g>
+  <g stroke="#8E6A46" fill="none" stroke-width="1.4" opacity="0.55">
+    <rect x="40" y="300" width="560" height="2"/>
+    <path d="M64 330c30-10 62-10 92 0M196 330c30-10 62-10 92 0M328 330c30-10 62-10 92 0"/>
+  </g>
+</svg>

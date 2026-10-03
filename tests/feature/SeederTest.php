@@ -148,6 +148,70 @@ final class SeederTest extends CIUnitTestCase
         }
     }
 
+    public function testEveryStoreHasOnePublishedDocumentary(): void
+    {
+        $this->seed();
+
+        $stores = $this->db->table('stores')->select('id, name')->get()->getResultArray();
+
+        $this->assertNotEmpty($stores);
+
+        foreach ($stores as $store) {
+            $documentary = $this->db
+                ->table('store_posts')
+                ->where('store_id', $store['id'])
+                ->where('post_type', 'documentary')
+                ->where('status', 'published')
+                ->get()
+                ->getResultArray();
+
+            $this->assertCount(
+                1,
+                $documentary,
+                "store {$store['name']} needs exactly one published documentary for the storefront",
+            );
+
+            $this->assertNotEmpty($documentary[0]['cover_image_url']);
+            $this->assertFileExists(
+                FCPATH . $documentary[0]['cover_image_url'],
+                "documentary cover for {$store['name']} is referenced but missing",
+            );
+        }
+    }
+
+    public function testDocumentariesAreIdempotent(): void
+    {
+        $this->seed();
+        $before = $this->db->table('store_posts')->countAllResults();
+
+        $this->seed();
+        $after = $this->db->table('store_posts')->countAllResults();
+
+        $this->assertGreaterThan(0, $before, 'the storefront documentary block needs seeded rows');
+        $this->assertSame($before, $after, 'a second seed run must not duplicate documentaries');
+    }
+
+    public function testNoDocumentaryClaimsAVideoThatDoesNotExist(): void
+    {
+        $this->seed();
+
+        $withMedia = $this->db
+            ->table('store_posts')
+            ->where('media_url IS NOT NULL', null, false)
+            ->get()
+            ->getResultArray();
+
+        $this->assertIsArray($withMedia, 'the media_url lookup must stay portable across drivers');
+
+        foreach ($withMedia as $post) {
+            $this->assertFileExists(
+                FCPATH . $post['media_url'],
+                "documentary {$post['slug']} advertises a video file that is missing, "
+                . 'so the storefront renders a play control that cannot play',
+            );
+        }
+    }
+
     public function testTheDemoSellerCanAuthenticate(): void
     {
         $this->seed();

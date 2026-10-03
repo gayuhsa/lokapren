@@ -16,6 +16,7 @@ $routes->post('register', '\App\Controllers\Auth\RegisterController::registerAct
 // service on demand, so session-dependent features keep working here.
 $routes->get('marketplace', '\App\Controllers\Marketplace::index');
 $routes->get('product/(:segment)', '\App\Controllers\Product::show/$1');
+$routes->get('store/(:segment)', '\App\Controllers\Storefront::show/$1');
 $routes->get('settings', '\App\Controllers\Settings::index', ['filter' => 'session']);
 $routes->post('settings', '\App\Controllers\Settings::update', ['filter' => 'session']);
 
