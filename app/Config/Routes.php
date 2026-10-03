@@ -53,3 +53,5 @@ $routes->post(
 );
 
 service('auth')->routes($routes, ['except' => ['logout']]);
+
+$routes->get('lokator', '\App\Controllers\Locator::index');
