@@ -157,6 +157,15 @@ echo view('partials/document-start', [
                 </p>
             </div>
 
+            <?php if (auth()->loggedIn()) : ?>
+                <?php /* The store id comes from this page's own store row, and the
+                server re-derives it from the product-free route anyway. */ ?>
+                <form class="sf-stats__action" action="<?= esc(site_url('chat/store/' . (int) $store['id']), 'attr') ?>" method="post">
+                    <?= csrf_field() ?>
+                    <button class="btn btn--ghost" type="submit">Tanya Pengrajin</button>
+                </form>
+            <?php endif ?>
+
             <?php if (! empty($store['phone'])) : ?>
                 <p class="sf-stats__action">
                     <a class="btn btn--primary" href="tel:<?= esc(preg_replace('/[^\d+]/', '', (string) $store['phone']), 'attr') ?>">

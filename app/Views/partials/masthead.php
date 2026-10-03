@@ -17,8 +17,8 @@ $navItems = [
     ['key' => 'artisan', 'label' => 'Artisan', 'url' => null],
     ['key' => 'detail', 'label' => 'Detail', 'url' => null],
     ['key' => 'gallery', 'label' => 'Galeri', 'url' => null],
-    ['key' => 'chat', 'label' => 'Obrolan Antar UMKM', 'url' => null],
-    ['key' => 'checkout', 'label' => 'Pesan & Checkout', 'url' => null],
+    ['key' => 'chat', 'label' => 'Obrolan Antar UMKM', 'url' => base_url('chat')],
+    ['key' => 'checkout', 'label' => 'Pesan & Checkout', 'url' => base_url('checkout')],
     ['key' => 'dashboard', 'label' => 'Dashboard Mitra UMKM', 'url' => null],
 ];
 ?>
@@ -47,7 +47,7 @@ $navItems = [
 
         <div class="masthead__account">
             <?php if (auth()->loggedIn()) : ?>
-                <span class="masthead__who"><?= esc(auth()->user()->username) ?></span>
+                <a class="masthead__who" href="<?= esc(site_url('orders'), 'attr') ?>"><?= esc(auth()->user()->username) ?></a>
 
                 <?php // Logging out is a state change, so it posts a CSRF
                 // token rather than following a link. ?>

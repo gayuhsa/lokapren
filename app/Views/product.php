@@ -132,11 +132,36 @@ echo view('partials/document-start', [
             <div class="actions">
                 <?php if (! $product['in_stock']) : ?>
                     <p class="actions__note">Stok sedang habis. Hubungi pengrajin untuk Availability.</p>
-                <?php else : ?>
-                    <button class="btn btn--primary btn--block" type="button" disabled>
-                        Pesan Sekarang
-                    </button>
+                <?php elseif (auth()->loggedIn()) : ?>
+                    <?php /*
+                     * A POST carrying a CSRF token, not a link: adding to a cart
+                     * changes state on the signed-in customer's own cart. The
+                     * price shown here is informational; the server re-derives it.
+                     */ ?>
+                    <form action="<?= esc(site_url('cart/add'), 'attr') ?>" method="post">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="variant_id"
+                               value="<?= (int) ($selected['id'] ?? 0) ?>">
+                        <input type="hidden" name="qty" value="1">
+                        <button class="btn btn--primary btn--block"
+                                type="submit"
+                                <?= $selected === null ? 'disabled' : '' ?>>
+                            Pesan Sekarang
+                        </button>
+                    </form>
                     <p class="actions__note">Pemesanan dikirim ke tahap checkout.</p>
+                <?php else : ?>
+                    <?php /* Starting a thread is a POST with a CSRF token, and the
+                    store is taken from the product row on the server, never from a
+                    submitted store_id. */ ?>
+                    <form action="<?= esc(site_url('chat/store/' . (int) $product['store_id']), 'attr') ?>" method="post">
+                        <?= csrf_field() ?>
+                        <button class="btn btn--ghost btn--block" type="submit">Tanya Pengrajin</button>
+                    </form>
+                    <a class="btn btn--primary btn--block" href="<?= esc(site_url('login'), 'attr') ?>">
+                        Masuk untuk Pesan
+                    </a>
+                    <p class="actions__note">Masuk dulu, lalu pemesanan dikirim ke tahap checkout.</p>
                 <?php endif ?>
             </div>
 

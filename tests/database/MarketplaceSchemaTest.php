@@ -39,6 +39,13 @@ final class MarketplaceSchemaTest extends CIUnitTestCase
         'review_photos',
         'review_helpful_votes',
         'store_visits',
+        'carts',
+        'cart_items',
+        'shipping_methods',
+        'payment_methods',
+        'promo_codes',
+        'order_payments',
+        'order_promos',
     ];
 
     public function testEveryMarketplaceTableIsCreated(): void

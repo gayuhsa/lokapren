@@ -53,8 +53,8 @@ final class CatalogQuery
             . ' ' . $this->cheapestVariantSql(false) . ' AS min_price,'
             . ' ' . $this->cheapestVariantSql(true) . ' AS min_price_in_stock,'
             . ' ' . $this->totalStockSql() . ' AS total_stock,'
-            . ' ' . $this->firstImageSql('pi.url') . ' AS image_url,'
-            . ' ' . $this->firstImageSql('pi.alt') . ' AS image_alt';
+            . ' ' . self::firstImageSql($this->db, 'pi.url') . ' AS image_url,'
+            . ' ' . self::firstImageSql($this->db, 'pi.alt') . ' AS image_alt';
     }
 
     /**
@@ -92,10 +92,13 @@ final class CatalogQuery
 
     /**
      * The value of a column on a product's first image, as a subquery.
+     *
+     * A product may have no picture at all, so every caller has to cope with a
+     * null here rather than assuming an image exists.
      */
-    private function firstImageSql(string $column): string
+    public static function firstImageSql(ConnectionInterface $db, string $column): string
     {
-        $sql = $this->db->table('product_images pi')
+        $sql = $db->table('product_images pi')
             ->select($column)
             ->where('pi.product_id = p.id', null, false)
             ->orderBy('pi.sort_order', 'ASC')
