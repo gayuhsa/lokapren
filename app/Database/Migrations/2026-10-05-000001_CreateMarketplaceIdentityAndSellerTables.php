@@ -21,24 +21,6 @@ class CreateMarketplaceIdentityAndSellerTables extends Migration
     public function up(): void
     {
         $this->forge->addField([
-            'id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
-            'parent_id'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'type'        => ['type' => 'VARCHAR', 'constraint' => 20],
-            'name'        => ['type' => 'VARCHAR', 'constraint' => 120],
-            'code'        => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
-            'latitude'    => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
-            'longitude'   => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
-            'created_at'  => ['type' => 'DATETIME', 'null' => true],
-            'updated_at'  => ['type' => 'DATETIME', 'null' => true],
-        ]);
-        $this->forge->addPrimaryKey('id');
-        $this->forge->addUniqueKey('code');
-        $this->forge->addKey(['type', 'parent_id']);
-        $this->forge->addKey('name');
-        $this->forge->addForeignKey('parent_id', 'regions', 'id', '', 'CASCADE');
-        $this->create('regions');
-
-        $this->forge->addField([
             'id'                   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'auto_increment' => true],
             'user_id'              => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
             'slug'                 => ['type' => 'VARCHAR', 'constraint' => 120],
@@ -52,10 +34,12 @@ class CreateMarketplaceIdentityAndSellerTables extends Migration
             'cover_path'           => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'banner_path'          => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'address_line'         => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            // Free-text Indonesian geography. The map works from lat/lon only, so
+            // these columns exist purely for display and printing on documents.
             'village'              => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-            'district_id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'regency_id'           => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'province_id'          => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'district'             => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'regency'              => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'province'             => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'postal_code'          => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
             'landmark_name'        => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
             'landmark_distance_km' => ['type' => 'DECIMAL', 'constraint' => '6,2', 'null' => true],
@@ -82,15 +66,12 @@ class CreateMarketplaceIdentityAndSellerTables extends Migration
         $this->forge->addUniqueKey('slug');
         $this->forge->addUniqueKey('partner_code');
         $this->forge->addKey(['is_active', 'is_verified']);
-        $this->forge->addKey(['district_id', 'is_active']);
-        $this->forge->addKey('regency_id');
-        $this->forge->addKey('province_id');
+        $this->forge->addKey(['district', 'is_active']);
+        $this->forge->addKey('regency');
+        $this->forge->addKey('province');
         $this->forge->addKey(['latitude', 'longitude']);
         $this->forge->addKey('rating_average');
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->addForeignKey('district_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('regency_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('province_id', 'regions', 'id', '', 'SET NULL');
         $this->create('seller_profiles');
 
         $this->forge->addField([
@@ -163,7 +144,6 @@ class CreateMarketplaceIdentityAndSellerTables extends Migration
             'seller_facilities',
             'seller_business_hours',
             'seller_profiles',
-            'regions',
         ] as $table) {
             $this->forge->dropTable($table, true);
         }

@@ -38,11 +38,23 @@ class CartModel extends BaseModel
     ];
 
     /**
+     * The cart row for a customer, or null when they have never added anything.
+     *
+     * Read-only: unlike `forCustomer()` it never creates a row, so the header
+     * badge can be drawn for every signed-in account (including sellers, who
+     * have no cart) without leaving a stray empty cart behind.
+     */
+    public function findForCustomer(int $customerId): ?array
+    {
+        return $this->newRow($this->newQuery()->where('customer_id', $customerId));
+    }
+
+    /**
      * Fetch (or lazily create) the cart for a customer.
      */
     public function forCustomer(int $customerId): array
     {
-        $cart = $this->newRow($this->newQuery()->where('customer_id', $customerId));
+        $cart = $this->findForCustomer($customerId);
 
         if ($cart !== null) {
             return $cart;

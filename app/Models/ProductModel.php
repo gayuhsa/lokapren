@@ -14,6 +14,10 @@ class ProductModel extends BaseModel
 
     protected $returnType = 'array';
 
+    public const STATUS_DRAFT     = 'draft';
+    public const STATUS_PUBLISHED = 'published';
+    public const STATUS_ARCHIVED  = 'archived';
+
     protected $useSoftDeletes = true;
     protected $deletedField = 'deleted_at';
 
@@ -82,19 +86,23 @@ class ProductModel extends BaseModel
     public function published()
     {
         return $this->builder()
-            ->where('status', 'published')
+            ->where('status', self::STATUS_PUBLISHED)
             ->where('is_active', 1)
             ->where('deleted_at', null);
     }
 
     /**
      * Products at or below their low-stock threshold, for dashboard alerts.
+     *
+     * Made-to-order products are left out: they are produced after a purchase,
+     * so an empty stock column says nothing about supply.
      */
     public function lowStock()
     {
         return $this->builder()
             ->where('stock', '<=', 'low_stock_threshold', false)
-            ->where('status', 'published')
+            ->where('status', self::STATUS_PUBLISHED)
+            ->where('made_to_order', 0)
             ->where('deleted_at', null);
     }
 

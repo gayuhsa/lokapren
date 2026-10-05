@@ -62,10 +62,15 @@ class CreateMarketplaceCommerceTables extends Migration
             'order_number'            => ['type' => 'VARCHAR', 'constraint' => 32],
             'customer_id'             => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
             'seller_id'               => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true],
-            'status'                  => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'pending'],
+            'status'                  => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'pending_payment'],
             'fulfillment_type'        => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'ship'],
             'production_progress'     => ['type' => 'TINYINT', 'constraint' => 1, 'unsigned' => true, 'default' => 0],
+            // No payment gateway is integrated. `payment_method` records how the
+            // buyer intends to pay (always `manual` today) and `payment_status`
+            // tracks the confirmation the seller records by hand; neither is ever
+            // settled by the application.
             'payment_method'          => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
+            'payment_status'          => ['type' => 'VARCHAR', 'constraint' => 20, 'default' => 'unpaid'],
             'currency'                => ['type' => 'CHAR', 'constraint' => 3, 'default' => 'IDR'],
             'subtotal'                => ['type' => 'BIGINT', 'constraint' => 15, 'unsigned' => true, 'default' => 0],
             'shipping_total'          => ['type' => 'BIGINT', 'constraint' => 15, 'unsigned' => true, 'default' => 0],
@@ -78,11 +83,16 @@ class CreateMarketplaceCommerceTables extends Migration
             'ship_recipient_name'     => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
             'ship_recipient_phone'    => ['type' => 'VARCHAR', 'constraint' => 25, 'null' => true],
             'ship_address_line'       => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
+            // Snapshotted from the customer's address at checkout. Geography is the
+            // free text the customer typed; lat/lon is kept so the seller can
+            // place the parcel on a map.
             'ship_village'            => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-            'ship_district_id'        => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'ship_regency_id'         => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'ship_province_id'        => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'ship_district'           => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'ship_regency'            => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'ship_province'           => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'ship_postal_code'        => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
+            'ship_latitude'           => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
+            'ship_longitude'          => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
             'ship_landmark'           => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
             'ship_notes'              => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'courier_code'            => ['type' => 'VARCHAR', 'constraint' => 20, 'null' => true],
@@ -106,14 +116,11 @@ class CreateMarketplaceCommerceTables extends Migration
         $this->forge->addKey(['seller_id', 'status']);
         $this->forge->addKey('status');
         $this->forge->addKey('placed_at');
-        $this->forge->addKey('ship_district_id');
-        $this->forge->addKey('ship_regency_id');
-        $this->forge->addKey('ship_province_id');
+        $this->forge->addKey('ship_district');
+        $this->forge->addKey('ship_regency');
+        $this->forge->addKey('ship_province');
         $this->forge->addForeignKey('customer_id', 'users', 'id', '', 'CASCADE');
         $this->forge->addForeignKey('seller_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->addForeignKey('ship_district_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('ship_regency_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('ship_province_id', 'regions', 'id', '', 'SET NULL');
         $this->create('orders');
 
         $this->forge->addField([

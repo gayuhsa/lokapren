@@ -74,7 +74,10 @@ class CreateMarketplaceReviewAndAnalyticsTables extends Migration
             'product_view_count' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'chat_started_count' => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'order_count'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
+            // Counted once per order when it first ships, and separately when it
+            // is confirmed complete, so a cancelled order never reaches revenue.
             'revenue_total'    => ['type' => 'BIGINT', 'constraint' => 15, 'unsigned' => true, 'default' => 0],
+            'completed_count'  => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'default' => 0],
             'top_product_id'   => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
             'created_at'       => ['type' => 'DATETIME', 'null' => true],
             'updated_at'       => ['type' => 'DATETIME', 'null' => true],

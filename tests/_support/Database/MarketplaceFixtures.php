@@ -56,6 +56,10 @@ trait MarketplaceFixtures
     /**
      * Create a seller with a storefront and return `[$sellerId, $profileId]`.
      *
+     * The seller is also put in Shield's `seller` group, because a profile row
+     * alone does not open the `/seller` area — the `role:seller` filter checks
+     * Shield's group membership, not the storefront table.
+     *
      * @return array{0: int, 1: int}
      */
     protected function makeSeller(string $prefix = 'sanggar'): array
@@ -70,7 +74,21 @@ trait MarketplaceFixtures
             'updated_at'   => $this->fixtureNow(),
         ]);
 
+        $this->addUserToGroup($sellerId, 'seller');
+
         return [$sellerId, $profileId];
+    }
+
+    /**
+     * Put a user into a Shield group, which is what `role:` filters check.
+     */
+    protected function addUserToGroup(int $userId, string $group): void
+    {
+        $this->insertFixture(config('Auth')->tables['groups_users'], [
+            'user_id'    => $userId,
+            'group'      => $group,
+            'created_at' => $this->fixtureNow(),
+        ]);
     }
 
     protected function makeCategory(string $name = 'Kalpataru'): int

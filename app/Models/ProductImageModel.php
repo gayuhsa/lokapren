@@ -6,6 +6,11 @@ namespace App\Models;
 
 /**
  * Product gallery images, optionally scoped to a variant.
+ *
+ * The `products` table has no cover column: the cover is whichever image is
+ * flagged primary, or the first one in display order. `coversFor()` resolves
+ * that for a whole page of products in a single query, so listings do not run
+ * one lookup per card.
  */
 class ProductImageModel extends BaseModel
 {
@@ -62,5 +67,57 @@ class ProductImageModel extends BaseModel
             ->where('product_id', $productId)
             ->set('is_primary', 0)
             ->update();
+    }
+
+    /**
+     * The cover image path for one product, or null when it has no photo.
+     */
+    public function coverFor(int $productId): ?string
+    {
+        $builder = $this->newQuery()
+            ->select('file_path')
+            ->where('product_id', $productId)
+            ->orderBy('is_primary', 'DESC')
+            ->orderBy('position', 'ASC')
+            ->orderBy('id', 'ASC');
+
+        $row = $this->newRow($builder->limit(1));
+
+        return $row === null ? null : $row['file_path'];
+    }
+
+    /**
+     * Cover image paths for many products at once.
+     *
+     * @param list<int> $productIds
+     *
+     * @return array<int, string> keyed by product id
+     */
+    public function coversFor(array $productIds): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $productIds)));
+
+        if ($ids === []) {
+            return [];
+        }
+
+        $covers = [];
+
+        foreach ($this->newRows($this->newQuery()
+            ->select('product_id, file_path')
+            ->whereIn('product_id', $ids)
+            ->orderBy('is_primary', 'DESC')
+            ->orderBy('position', 'ASC')
+            ->orderBy('id', 'ASC')) as $row) {
+            $productId = (int) $row['product_id'];
+
+            // The first row seen for a product is its cover, because the sort
+            // puts the primary image and then the earliest position first.
+            if (! isset($covers[$productId])) {
+                $covers[$productId] = $row['file_path'];
+            }
+        }
+
+        return $covers;
     }
 }

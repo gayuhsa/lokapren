@@ -14,3 +14,5 @@ clean:
 	-$(ENGINE) rm -f $$($(ENGINE) ps -a -q --filter ancestor=$(IMAGE_NAME))
 	-$(ENGINE) rmi $(IMAGE_NAME)
 
+zip:
+	cd .. && zip -r "$(notdir $(CURDIR)).zip" "$(notdir $(CURDIR))" -x "$(notdir $(CURDIR))/.git/*"

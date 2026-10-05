@@ -48,9 +48,9 @@ class SellerProfileModel extends BaseModel
         'banner_path',
         'address_line',
         'village',
-        'district_id',
-        'regency_id',
-        'province_id',
+        'district',
+        'regency',
+        'province',
         'postal_code',
         'landmark_name',
         'landmark_distance_km',
@@ -67,9 +67,6 @@ class SellerProfileModel extends BaseModel
         'artisan_count'        => 'int',
         'rating_count'         => 'int',
         'sold_count'           => 'int',
-        'district_id'          => '?int',
-        'regency_id'           => '?int',
-        'province_id'          => '?int',
         'is_active'            => 'bool',
         'is_verified'          => 'bool',
     ];
@@ -88,17 +85,32 @@ class SellerProfileModel extends BaseModel
         'latitude'          => 'permit_empty|decimal|validate_latitude',
         'longitude'         => 'permit_empty|decimal|validate_longitude',
         'landmark_distance_km' => 'permit_empty|decimal',
-        'district_id'       => 'permit_empty|is_natural_no_zero',
-        'regency_id'        => 'permit_empty|is_natural_no_zero',
-        'province_id'       => 'permit_empty|is_natural_no_zero',
+        'district'            => 'permit_empty|max_length[100]',
+        'regency'             => 'permit_empty|max_length[100]',
+        'province'            => 'permit_empty|max_length[100]',
     ];
 
-    /**
-     * Coordinates are validated for plausible Indonesian bounds so a bad
-     * geocode cannot be persisted (AGENTS.md: never trust client coordinates).
-     */
-    public function validateLatitude($value): bool|string
-    {
+/**
+ * The storefront of one seller, by `user_id`.
+ *
+ * This table names its owner column `user_id` rather than `seller_id`, so the
+ * lookup is spelled out here instead of reusing the ownership trait's helper.
+ *
+ * @return array<string, mixed>|null
+ */
+public function findForUser(int $userId): ?array
+{
+    return $this->newRow(
+        $this->newQuery()->where('user_id', $userId)
+    );
+}
+
+/**
+ * Coordinates are validated for plausible Indonesian bounds so a bad
+ * geocode cannot be persisted (AGENTS.md: never trust client coordinates).
+ */
+public function validateLatitude($value): bool|string
+{
         if ($value === null || $value === '') {
             return true;
         }

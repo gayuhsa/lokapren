@@ -1,60 +1,85 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register</title>
-</head>
-<body>
-    <h1>Create an account</h1>
+<?= $this->extend('layouts/main') ?>
 
-    <?php if (session('error') !== null) : ?>
-        <p><?= esc(session('error')) ?></p>
-    <?php elseif (session('errors') !== null) : ?>
-        <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
-                <p><?= esc($error) ?></p>
-            <?php endforeach ?>
-        <?php else : ?>
-            <p><?= esc(session('errors')) ?></p>
-        <?php endif ?>
-    <?php endif ?>
+<?= $this->section('content') ?>
 
-    <form action="<?= url_to('register') ?>" method="post">
-        <?= csrf_field() ?>
+<div class="lp-auth">
+    <div class="lp-auth__card lp-auth__card--wide">
+        <div class="lp-auth__head">
+            <h1>Daftar ke Lokapren</h1>
+            <p class="lp-muted">Beli karya kerajinan tangan, atau tawarkan karyamu ke pembeli di Magelang.</p>
+        </div>
 
-        <label for="email">Email</label>
-        <br>
-        <input type="email" id="email" name="email" inputmode="email" autocomplete="email" value="<?= old('email') ?>" required>
-        <br><br>
 
-        <label for="username">Username</label>
-        <br>
-        <input type="text" id="username" name="username" autocomplete="username" value="<?= old('username') ?>" required>
-        <br><br>
+        <form method="post" action="<?= route_to('register') ?>" autocomplete="on">
+            <?= csrf_field() ?>
 
-        <label for="password">Password</label>
-        <br>
-        <input type="password" id="password" name="password" autocomplete="new-password" required>
-        <br><br>
+            <fieldset style="border:0;padding:0;margin:0 0 1rem;">
+                <legend class="lp-field__label" style="margin-bottom:.5rem;">Saya ingin</legend>
 
-        <label for="password_confirm">Confirm password</label>
-        <br>
-        <input type="password" id="password_confirm" name="password_confirm" autocomplete="new-password" required>
-        <br><br>
+                <div class="lp-role-choice">
+                    <label class="lp-radio-card">
+                        <input type="radio" name="role" value="customer"
+                               <?= old('role', 'customer') === 'customer' ? 'checked' : '' ?>>
+                        <span>
+                            <strong>Beli karya</strong><br>
+                            <span class="lp-muted">Saya mencari produk dari pengrajin.</span>
+                        </span>
+                    </label>
 
-        <label for="role">I want to join as a</label>
-        <br>
-        <select id="role" name="role" required>
-            <option value="">Select a role</option>
-            <option value="customer"<?php if (old('role') === 'customer'): ?> selected<?php endif ?>>Customer</option>
-            <option value="seller"<?php if (old('role') === 'seller'): ?> selected<?php endif ?>>Seller</option>
-        </select>
-        <br><br>
+                    <label class="lp-radio-card">
+                        <input type="radio" name="role" value="seller"
+                               <?= old('role') === 'seller' ? 'checked' : '' ?>>
+                        <span>
+                            <strong>Jual karya</strong><br>
+                            <span class="lp-muted">Saya seorang pengrajin dan ingin membuka toko.</span>
+                        </span>
+                    </label>
+                </div>
+            </fieldset>
 
-        <button type="submit">Register</button>
-    </form>
+            <div class="lp-form__row">
+                <div class="lp-field">
+                    <label for="full_name">Nama lengkap</label>
+                    <input id="full_name" type="text" name="full_name" autocomplete="name"
+                           value="<?= esc(old('full_name')) ?>" required>
+                </div>
 
-    <p>Already have an account? <a href="<?= url_to('login') ?>">Log in</a></p>
-</body>
-</html>
+                <div class="lp-field">
+                    <label for="username">Nama pengguna</label>
+                    <input id="username" type="text" name="username" autocomplete="username"
+                           value="<?= esc(old('username')) ?>" required>
+                    <small class="lp-hint">Dipakai untuk masuk bersama email.</small>
+                </div>
+            </div>
+
+            <div class="lp-field">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" autocomplete="email"
+                       value="<?= esc(old('email')) ?>" required>
+            </div>
+
+            <div class="lp-form__row">
+                <div class="lp-field">
+                    <label for="password">Kata sandi</label>
+                    <input id="password" type="password" name="password"
+                           autocomplete="new-password" required>
+                </div>
+
+                <div class="lp-field">
+                    <label for="password_confirm">Ulangi kata sandi</label>
+                    <input id="password_confirm" type="password" name="password_confirm"
+                           autocomplete="new-password" required>
+                </div>
+            </div>
+
+            <button class="lp-btn lp-btn--solid lp-btn--block" type="submit">Buat Akun</button>
+        </form>
+
+        <p class="lp-small lp-muted" style="margin-top:1rem;text-align:center;">
+            Sudah punya akun?
+            <a href="<?= route_to('login') ?>">Masuk di sini</a>
+        </p>
+    </div>
+</div>
+
+<?= $this->endSection() ?>

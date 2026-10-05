@@ -79,15 +79,21 @@ abstract class BaseModel extends Model
      *
      * The soft-delete filter is applied here because a raw builder query does
      * not get it for free the way `findAll()` does.
+     *
+     * Public because the service layer composes read queries against models it
+     * does not own. It returns a builder, never the shared one, so a caller
+     * cannot leave state behind for the next query.
      */
-    protected function newQuery(): BaseBuilder
+    public function newQuery(): BaseBuilder
     {
         $this->resetQuery();
 
         $builder = $this->builder();
 
         if ($this->useSoftDeletes) {
-            $builder->where($this->deletedField, null);
+            // Qualified, because a scope helper may join another table that also
+            // has a `deleted_at` column — an unqualified one is then ambiguous.
+            $builder->where($this->DBPrefix . $this->table . '.' . $this->deletedField, null);
         }
 
         return $builder;
@@ -114,13 +120,14 @@ abstract class BaseModel extends Model
     /**
      * Update rows matching a simple `column => value` map.
      *
-     * Starts from `newQuery()` so an earlier scope cannot add conditions to
-     * this write by accident.
+     * Public because services and controllers write through it; it starts from
+     * `newQuery()` so an earlier scope cannot add conditions to this write by
+     * accident.
      *
      * @param array<string, mixed> $set
      * @param array<string, mixed> $where
      */
-    protected function updateWhere(array $set, array $where): bool
+    public function updateWhere(array $set, array $where): bool
     {
         $builder = $this->newQuery()->where($where);
 
@@ -132,7 +139,7 @@ abstract class BaseModel extends Model
      *
      * @return list<array<string, mixed>>
      */
-    protected function newRows(?BaseBuilder $builder = null, ?int $limit = null, ?int $offset = null): array
+    public function newRows(?BaseBuilder $builder = null, ?int $limit = null, ?int $offset = null): array
     {
         $builder ??= $this->newQuery();
 
@@ -154,7 +161,7 @@ abstract class BaseModel extends Model
      *
      * @return array<string, mixed>|null
      */
-    protected function newRow(?BaseBuilder $builder = null): ?array
+    public function newRow(?BaseBuilder $builder = null): ?array
     {
         return $this->castRow(($builder ?? $this->newQuery())->get()->getRowArray());
     }

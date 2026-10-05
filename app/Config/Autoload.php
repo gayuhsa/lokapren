@@ -88,5 +88,5 @@ class Autoload extends AutoloadConfig
      *
      * @var list<string>
      */
-    public $helpers = ['auth', 'setting', 'url'];
+    public $helpers = ['auth', 'setting', 'url', 'marketplace', 'lokapren_view'];
 }

@@ -207,25 +207,120 @@ class OrderModel extends BaseModel
      *
      * @return list<array<string, mixed>>
      */
-    public function forCustomerHistory(int $customerId, int $limit = 50, int $offset = 0): array
+    public function forCustomerHistory(int $customerId, int $limit = 50, int $offset = 0, array $statuses = []): array
     {
         $builder = $this->newQuery()
-            ->where('customer_id', $customerId)
-            ->orderBy('placed_at', 'DESC');
+            ->select('orders.*, seller_profiles.display_name AS shop_name, seller_profiles.slug AS shop_slug, seller_profiles.logo_path AS shop_logo, seller_profiles.village AS shop_village, seller_profiles.regency AS shop_regency')
+            ->join('seller_profiles', 'seller_profiles.user_id = orders.seller_id', 'left')
+            ->where('orders.customer_id', $customerId)
+            ->orderBy('orders.placed_at', 'DESC');
+
+        // The status tab filters in SQL, not after paging: slicing first and
+        // filtering afterwards would show a short page and misreport the
+        // number of pages.
+        if ($statuses !== []) {
+            $builder->whereIn('orders.status', $statuses);
+        }
 
         return $this->newRows($builder, $limit, $offset);
+    }
+
+/**
+ * Sum of `grand_total` across a customer's orders in the given statuses.
+ *
+ * Used for the account page's lifetime-spending figure, so it queries every
+ * matching order rather than adding up the ten most recent ones.
+ *
+ * @param list<string> $statuses
+ */
+public function totalForCustomer(int $customerId, array $statuses): int
+{
+    $row = $this->newQuery()
+        ->selectSum('grand_total', 'total')
+        ->where('customer_id', $customerId)
+        ->whereIn('status', $statuses)
+        ->get()
+        ->getRowArray();
+
+    return (int) ($row['total'] ?? 0);
+}
+
+/**
+ * How many orders a customer has in total, ignoring the limit on the account
+ * page's recent-orders list.
+ *
+ * @param list<string> $statuses
+ */
+public function countForCustomer(int $customerId, array $statuses = []): int
+{
+    $builder = $this->newQuery()
+        ->where('customer_id', $customerId);
+
+    if ($statuses !== []) {
+        $builder->whereIn('status', $statuses);
+    }
+
+    return $builder->countAllResults();
+}
+
+/**
+ * Order totals per `OrderService::CUSTOMER_BUCKETS` tab, for the
+ * badge counts in the buyer's order history.
+ *
+ * @param array<string, list<string>> $buckets
+ *
+ * @return array<string, int>
+ */
+    public function statusCountsForCustomer(int $customerId, array $buckets): array
+    {
+        $rows = $this->newQuery()
+            ->select('status, COUNT(*) AS total', false)
+            ->where('customer_id', $customerId)
+            ->groupBy('status')
+            ->get()
+            ->getResultArray();
+
+        $byStatus = [];
+        foreach ($rows as $row) {
+            $byStatus[(string) $row['status']] = (int) $row['total'];
+        }
+
+        $counts = [];
+
+        foreach ($buckets as $key => $statuses) {
+            if ($statuses === []) {
+                $counts[$key] = array_sum($byStatus);
+                continue;
+            }
+
+            $counts[$key] = array_sum(array_map(
+                static fn (string $status): int => $byStatus[$status] ?? 0,
+                $statuses
+            ));
+        }
+
+        return $counts;
     }
 
     /**
      * Seller earnings for a date range, from the immutable snapshot on the
      * order rather than a separate cash-book table.
+     *
+     * Revenue is recognised on the order's first arrival at `shipped`, which is
+     * what `OrderService` writes into the daily rollup, so this reads the same
+     * window. Counting only delivered and completed would report less than the
+     * seller's own dashboard shows.
      */
     public function earningsBetween(int $sellerId, string $from, string $to): int
     {
         $row = $this->newQuery()
             ->selectSum('seller_earning', 'total')
             ->where('seller_id', $sellerId)
-            ->whereIn('status', [self::STATUS_DELIVERED, self::STATUS_COMPLETED])
+            ->whereIn('status', [
+                self::STATUS_SHIPPED,
+                self::STATUS_DELIVERED,
+                self::STATUS_COMPLETED,
+            ])
             ->where('placed_at >=', $from)
             ->where('placed_at <=', $to)
             ->get()
@@ -235,20 +330,24 @@ class OrderModel extends BaseModel
     }
 
     /**
-     * Order count grouped by destination regency, for the dashboard map.
+     * Order count grouped by destination city/regency, for the dashboard's
+     * buyer-geography breakdown.
+     *
+     * Geography is the free text the customer typed, so this groups on the
+     * label rather than a normalised reference table.
      *
      * @return list<array<string, mixed>>
      */
     public function buyerGeography(int $sellerId, string $from, string $to): array
     {
         $builder = $this->newQuery()
-            ->select('ship_regency_id AS regency_id, COUNT(*) AS order_count, SUM(grand_total) AS revenue_total')
+            ->select('ship_regency AS regency, COUNT(*) AS order_count, SUM(grand_total) AS revenue_total')
             ->where('seller_id', $sellerId)
-            // `!= NULL` never matches in SQL, so the IS NOT NULL test is explicit.
-            ->where('ship_regency_id IS NOT NULL', null, false)
+            // `!= ''` never matches in SQL, so the non-empty test is explicit.
+            ->where('ship_regency !=', '')
             ->where('placed_at >=', $from)
             ->where('placed_at <=', $to)
-            ->groupBy('ship_regency_id')
+            ->groupBy('ship_regency')
             ->orderBy('order_count', 'DESC');
 
         return $this->newRows($builder);
