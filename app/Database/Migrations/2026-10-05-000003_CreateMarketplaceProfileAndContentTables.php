@@ -53,11 +53,15 @@ class CreateMarketplaceProfileAndContentTables extends Migration
             'recipient_name'   => ['type' => 'VARCHAR', 'constraint' => 150],
             'recipient_phone'  => ['type' => 'VARCHAR', 'constraint' => 25, 'null' => true],
             'address_line'     => ['type' => 'VARCHAR', 'constraint' => 255],
+            // Free-text Indonesian geography, typed by the customer. Delivery
+            // distance and "Lihat di Peta" are derived from latitude/longitude.
             'village'          => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
-            'district_id'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'regency_id'       => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
-            'province_id'      => ['type' => 'INT', 'constraint' => 11, 'unsigned' => true, 'null' => true],
+            'district'         => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'regency'          => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
+            'province'         => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'postal_code'      => ['type' => 'VARCHAR', 'constraint' => 10, 'null' => true],
+            'latitude'         => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
+            'longitude'        => ['type' => 'DECIMAL', 'constraint' => '10,7', 'null' => true],
             'landmark'         => ['type' => 'VARCHAR', 'constraint' => 150, 'null' => true],
             'delivery_notes'   => ['type' => 'VARCHAR', 'constraint' => 255, 'null' => true],
             'is_hotel'         => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 0],
@@ -68,13 +72,10 @@ class CreateMarketplaceProfileAndContentTables extends Migration
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addKey(['user_id', 'is_default']);
-        $this->forge->addKey('district_id');
-        $this->forge->addKey('regency_id');
-        $this->forge->addKey('province_id');
+        $this->forge->addKey('district');
+        $this->forge->addKey('regency');
+        $this->forge->addKey('province');
         $this->forge->addForeignKey('user_id', 'users', 'id', '', 'CASCADE');
-        $this->forge->addForeignKey('district_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('regency_id', 'regions', 'id', '', 'SET NULL');
-        $this->forge->addForeignKey('province_id', 'regions', 'id', '', 'SET NULL');
         $this->create('addresses');
 
         $this->forge->addField([

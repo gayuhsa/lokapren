@@ -49,16 +49,47 @@ class ReviewModel extends BaseModel
     /**
      * Published reviews for a product, newest first.
      *
+     * The reviewer's display name comes from `user_profiles` so the product
+     * page can show "Budi dari CHAPTER I" without a second query; `users.id` is
+     * never rendered.
+     *
      * @return list<array<string, mixed>>
      */
     public function publishedFor(int $productId, int $limit = 20, int $offset = 0): array
     {
-        $builder = $this->newQuery()
-            ->where('product_id', $productId)
-            ->where('status', self::STATUS_PUBLISHED)
-            ->orderBy('created_at', 'DESC');
+        return $this->newRows(
+            $this->newQuery()
+                ->select('reviews.*, user_profiles.full_name AS customer_full_name, user_profiles.photo_path AS customer_photo')
+                ->join('user_profiles', 'user_profiles.user_id = reviews.customer_id', 'left')
+                ->where('reviews.product_id', $productId)
+                ->where('reviews.status', self::STATUS_PUBLISHED)
+                ->orderBy('reviews.created_at', 'DESC'),
+            $limit,
+            $offset
+        );
+    }
 
-        return $this->newRows($builder, $limit, $offset);
+    /**
+     * Newest reviews across every product a seller owns, for the storefront
+     * and the profile page.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function latestForSeller(int $sellerId, int $limit = 6): array
+    {
+        return $this->newRows(
+            $this->newQuery()
+                ->select('reviews.*, products.name AS product_name, products.slug AS product_slug, user_profiles.full_name AS customer_full_name, user_profiles.photo_path AS customer_photo')
+                ->join('products', 'products.id = reviews.product_id', 'left')
+                ->join('user_profiles', 'user_profiles.user_id = reviews.customer_id', 'left')
+                ->where('products.seller_id', $sellerId)
+                ->where('reviews.status', self::STATUS_PUBLISHED)
+                // `products` and `reviews` both have a `deleted_at`, so the
+                // column has to be qualified once `products` is joined in.
+                ->where('reviews.deleted_at', null)
+                ->orderBy('reviews.created_at', 'DESC'),
+            $limit
+        );
     }
 
     /**
@@ -71,6 +102,23 @@ class ReviewModel extends BaseModel
         return $this->newRow(
             $this->newQuery()->where('order_item_id', $orderItemId)
         );
+    }
+
+    /**
+     * Order lines of one order that already carry a review, so the order page
+     * can hide the form for them instead of re-offering a duplicate submit.
+     *
+     * @return list<int>
+     */
+    public function reviewedItemIds(int $orderId): array
+    {
+        $rows = $this->newQuery()
+            ->select('order_item_id')
+            ->where('order_id', $orderId)
+            ->get()
+            ->getResultArray();
+
+        return array_map(static fn (array $row): int => (int) $row['order_item_id'], $rows);
     }
 
     /**

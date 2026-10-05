@@ -71,13 +71,21 @@ class CartItemModel extends BaseModel
 
     /**
      * A cart's lines joined to product detail, ready for the cart view.
+     *
+     * The seller storefront columns are joined in so the cart can show one
+     * block per sanggar without a second round trip. The product photo is not
+     * here: `products` has no cover column, so `CartService` attaches it from
+     * `product_images` after this query.
      */
     public function detailedFor(int $cartId)
     {
-        return $this->builder()
-            ->select('cart_items.*, products.name AS product_name, products.slug AS product_slug, products.price AS product_price, products.stock AS product_stock, products.stock AS available_stock, products.weight_gram, products.made_to_order, product_variants.label AS variant_label, product_variants.stock AS variant_stock')
+        // `newQuery()` rather than the shared builder, so a `select()` or
+        // `join()` left here cannot leak into the next unrelated query.
+        return $this->newQuery()
+            ->select('cart_items.*, products.name AS product_name, products.slug AS product_slug, products.price AS product_price, products.stock AS product_stock, products.stock AS available_stock, products.weight_gram, products.made_to_order, product_variants.label AS variant_label, product_variants.stock AS variant_stock, seller_profiles.display_name AS shop_name, seller_profiles.slug AS shop_slug, seller_profiles.logo_path AS shop_logo, seller_profiles.village AS shop_village, seller_profiles.district AS shop_district, seller_profiles.regency AS shop_regency')
             ->join('products', 'products.id = cart_items.product_id', 'left')
             ->join('product_variants', 'product_variants.id = cart_items.variant_id', 'left')
+            ->join('seller_profiles', 'seller_profiles.user_id = cart_items.seller_id', 'left')
             ->where('cart_items.cart_id', $cartId)
             ->where('products.deleted_at', null)
             ->orderBy('cart_items.seller_id', 'ASC')

@@ -28,10 +28,12 @@ class AddressModel extends BaseModel
         'recipient_phone',
         'address_line',
         'village',
-        'district_id',
-        'regency_id',
-        'province_id',
+        'district',
+        'regency',
+        'province',
         'postal_code',
+        'latitude',
+        'longitude',
         'landmark',
         'delivery_notes',
         'is_hotel',
@@ -48,13 +50,33 @@ class AddressModel extends BaseModel
         'recipient_phone' => 'permit_empty|max_length[25]',
         'address_line'    => 'required|max_length[255]',
         'village'         => 'permit_empty|max_length[100]',
+        'district'        => 'permit_empty|max_length[100]',
+        'regency'         => 'permit_empty|max_length[100]',
+        'province'        => 'permit_empty|max_length[100]',
         'postal_code'     => 'permit_empty|max_length[10]',
+        // Indonesia spans roughly 11°S–6°N and 95°E–141°E.
+        'latitude'        => 'permit_empty|decimal|numeric|less_than_equal_to[6]|greater_than_equal_to[-11]',
+        'longitude'       => 'permit_empty|decimal|numeric|less_than_equal_to[141]|greater_than_equal_to[95]',
         'landmark'        => 'permit_empty|max_length[150]',
         'delivery_notes'  => 'permit_empty|max_length[255]',
-        'district_id'     => 'permit_empty|is_natural_no_zero',
-        'regency_id'      => 'permit_empty|is_natural_no_zero',
-        'province_id'     => 'permit_empty|is_natural_no_zero',
     ];
+
+    /**
+     * One-line Indonesian address for lists and courier labels.
+     */
+    public function formatAsText(array $address): string
+    {
+        $parts = array_filter([
+            $address['address_line'] ?? null,
+            $address['village'] ?? null,
+            $address['district'] ?? null,
+            $address['regency'] ?? null,
+            $address['province'] ?? null,
+            $address['postal_code'] ?? null,
+        ], static fn ($part): bool => $part !== null && $part !== '');
+
+        return implode(', ', $parts);
+    }
 
     /**
      * A user's live addresses, default first.

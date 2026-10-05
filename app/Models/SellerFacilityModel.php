@@ -35,18 +35,53 @@ class SellerFacilityModel extends BaseModel
     ];
 
     /**
-     * Distinct facility codes available across the locator, for the filter UI.
+     * The facility vocabulary, code => Indonesian label.
      *
-     * @return list<string>
+     * There is no lookup table for this, so the codes live here as the single
+     * source of truth: the seller editor only offers these, and
+     * `ShopService::saveFacilities()` rejects anything outside the list. That
+     * keeps the locator filter from accumulating arbitrary text.
+     *
+     * @var array<string, string>
+     */
+    public const FACILITIES = [
+        'kelas_memahat'   => 'Kelas Memahat',
+        'kelas_mengamik'  => 'Kelas Mengamik',
+        'kelas_melukis'   => 'Kelas Melukis',
+        'galeri'          => 'Galeri Karya',
+        'parkir_bus'      => 'Parkir Bus Wisata',
+        'parkir_mobil'    => 'Parkir Mobil',
+        'wc'              => 'Toilet Umum',
+        'wifi'            => 'WiFi',
+        'tempat_ibadah'   => 'Tempat Ibadah Terdekat',
+        'opsi_takeaway'  => 'Bisa Dibeli Offline',
+        'fasilitas_simpan' => 'Fasilitas Simpan Barang',
+    ];
+
+    /**
+     * The facility vocabulary as `code => label`.
+     *
+     * @return array<string, string>
      */
     public function availableFacilities(): array
     {
-        return $this->newRows(
+        return self::FACILITIES;
+    }
+
+    /**
+     * Distinct facility codes currently advertised by at least one seller,
+     * which is what the public locator filter shows.
+     *
+     * @return list<string>
+     */
+    public function advertisedFacilities(): array
+    {
+        return array_column($this->newRows(
             $this->newQuery()
                 ->select('facility')
                 ->distinct()
                 ->orderBy('facility', 'ASC')
-        );
+        ), 'facility');
     }
 
     /**

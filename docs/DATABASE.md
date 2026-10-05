@@ -3,13 +3,25 @@
 MVP design for the Indonesian city-focused UMKM marketplace described in `AGENTS.md`.
 Every table below is derived from a screen in `scratchpad/*.pdf`; the source screen is
 noted in each section. Tables that only served non-MVP extras were deliberately left out —
-see §11.
+see §12.
 
 Stack: CodeIgniter 4 + CodeIgniter Shield + **MariaDB** (app) and **SQLite3** (`tests`
 group, `db_` prefix). All migrations are verified to run on both engines.
 
-Result: **26 marketplace tables** + 7 Shield tables + `settings`, 57 foreign keys,
-94 non-primary indexes.
+Schema lives in six migrations under `app/Database/Migrations`:
+
+| Migration | Tables |
+|---|---|
+| `2026-10-05-000001_CreateMarketplaceIdentityAndSellerTables` | `seller_profiles`, `seller_business_hours`, `seller_facilities`, `seller_story_sections`, `seller_media` |
+| `2026-10-05-000002_CreateMarketplaceCatalogTables` | `product_categories`, `products`, `product_variants`, `product_images` |
+| `2026-10-05-000003_CreateMarketplaceProfileAndContentTables` | `user_profiles`, `addresses`, `blog_categories`, `blog_posts` |
+| `2026-10-05-000004_CreateMarketplaceCommerceTables` | `carts`, `cart_items`, `orders`, `order_items`, `order_shipments`, `order_status_history` |
+| `2026-10-05-000005_CreateMarketplaceChatTables` | `conversations`, `messages`, `seller_quick_replies` |
+| `2026-10-05-000006_CreateMarketplaceReviewAndAnalyticsTables` | `reviews`, `review_images`, `seller_daily_stats` |
+
+Result: **25 marketplace tables** + 7 Shield tables + `settings`, 48 foreign keys,
+92 non-primary indexes (counted on the SQLite test engine; MariaDB additionally creates a
+supporting index for every InnoDB foreign key).
 
 ---
 
@@ -21,14 +33,14 @@ Result: **26 marketplace tables** + 7 Shield tables + `settings`, 57 foreign key
 | 2 | **Money is `BIGINT` integer rupiah.** Never `DECIMAL`, never `FLOAT`. | AGENTS: "Do not use floating-point arithmetic for money." Every amount column is server-computed and snapshotted onto the order. |
 | 3 | **Statuses are `VARCHAR`, not `ENUM`.** Allowed values documented per column. | CI4 Forge has no `ENUM` support and `ENUM` is not portable to the SQLite3 test engine. Values are validated in application code and in `Config/Validation.php`. |
 | 4 | **Ownership is always FK → `users.id`.** No `seller_id` can be client-supplied. | AGENTS: "Never trust client-supplied `user_id`, `seller_id`…". Controllers resolve the id from Shield, never from the request. |
-| 5 | **Auth is `users.username` + `auth_identities` email + `users.password`. No phone number anywhere in the schema.** | Shield already stores the email in `auth_identities`, not `users`, so no schema change is needed at all. `Auth::$validFields = ['email', 'username']` accepts either identifier. |
+| 5 | **Auth is `users.username` + one `auth_identities` row (`type = 'email_password'`, `secret` = email, `secret2` = password hash). No phone number anywhere in the schema.** | Shield keeps both the email and the hash in `auth_identities`, so `users` needs no email or password column at all. `Auth::$validFields = ['email', 'username']` accepts either identifier. |
 | 6 | **Seller location lives inside `seller_profiles`.** | AGENTS: "Seller location belongs to the seller/profile domain." Every screen shows exactly one workshop per seller, so a flat 1:1 keeps the invariant structurally true. |
 | 7 | **Orders snapshot everything mutable.** `order_items` stores name/variant/sku/image/unit_price; `orders` stores the whole address block. | A historical invoice must not change when a product or address is later edited. |
 | 8 | **Aggregates are denormalized but server-only.** `rating_average`, `rating_count`, `sold_count`, `visit_count`, `artisan_count` are recomputed by the application. | Storefront and catalog need read-speed. Never read these from the request. |
-| 9 | **`regions` is the single reference for Indonesian geography** (province → regency → district → village). | "Indonesian city-focused". Used by the locator, address forms, search-by-city and buyer geography. |
+| 9 | **Indonesian geography is snapshotted as text, never normalised into a lookup table.** `seller_profiles` and `orders` each carry their own `province` / `regency` / `district` / `village` `VARCHAR`s. | "Indonesian city-focused", but nothing joins against a region list: the locator filters on the seller's own columns, and an order must keep the address it actually shipped to even if a boundary is renamed. Buyer geography on the dashboard groups by `orders.ship_regency`. |
 | 10 | **Deletes cascade only for true child rows.** `products` is `RESTRICT` from `order_items` so sold history cannot vanish. | Auditability of orders, reviews and payouts. |
-| 11 | **`identity_number` (NIK) is optional and must be encrypted at rest**; never render it. | Profile PDF asks for "Nama Lengkap Sesuai KTP". Flagged in §10. |
-| 12 | **Chat bodies are stored as plaintext `TEXT`, not encrypted.** | The design *claims* an internal encryption channel; storing ciphertext would break search, moderation and reporting. Revoke/retention is handled in application code. Flagged in §10. |
+| 11 | **`identity_number` (NIK) is optional and must be encrypted at rest**; never render it. | Profile PDF asks for "Nama Lengkap Sesuai KTP". Flagged in §11. |
+| 12 | **Chat bodies are stored as plaintext `TEXT`, not encrypted.** | The design *claims* an internal encryption channel; storing ciphertext would break search, moderation and reporting. Revoke/retention is handled in application code. Flagged in §11. |
 | 13 | **`addresses.recipient_phone` and `orders.ship_recipient_phone` are delivery data, not login identifiers.** | AGENTS: "Use Indonesian conventions for … phone numbers". A courier needs a number; no authentication path uses it. |
 
 ---
@@ -50,7 +62,6 @@ erDiagram
     seller_profiles ||--o{ seller_facilities : "locator badges"
     seller_profiles ||--o{ seller_story_sections : "story blocks"
     seller_profiles ||--o{ seller_media : "gallery / 360 / documentary"
-    seller_profiles }o--o{ regions : "located in"
 
     products }o--o| product_categories : "classified"
     products ||--o{ product_variants : "sizes / grades"
@@ -70,18 +81,17 @@ erDiagram
 
 ---
 
-## 3. Identity, regions and the storefront
+## 3. Identity and the storefront
 
 **Source:** `Autentikasi & Masuk Akun`, `Virtual Storefront & Profil Artisan`,
 `Lokator Galeri & Peta Pengrajin Magelang`
 
 | Table | Purpose | Design evidence |
 |---|---|---|
-| `users` *(Shield only, unmodified)* | `id`, `username`, `password`, `status`, `active`, `last_active`, soft-delete columns. Email lives in `auth_identities`. | "Email" + username registration. **No phone column** — see decision 5. |
-| `regions` | province → regency → district → village hierarchy, with `code` (Kemendagri) and centroid lat/lng. | "Kec. Borobudur, Kab. Magelang, Jawa Tengah 56553"; locator filters by desa. |
+| `users` *(Shield only, unmodified)* | `id`, `username`, `status`, `active`, `last_active`, soft-delete columns. Email **and** password hash live in `auth_identities`. | "Email" + username registration. **No phone column** — see decision 5. |
 | `seller_profiles` | **The storefront.** Identity, presentation, location, trust and aggregate stats. `user_id` UNIQUE. | "SENTRA BUDAYA CANDIREJO", `partner_code` = `#BDR-88219`, tagline, "4.9 / 5.0", "428 Ulasan Terkurasi", `avg_response_minutes` = "12m", `artisan_count` = "14 Pengukir", `is_verified` = "Verified Magelang Artisan", full address block + `latitude`/`longitude`/`landmark_distance_km` = "3.2 km dari Candi Borobudur". |
-| `seller_business_hours` | One row per weekday (`day_of_week` UNIQUE with seller). | "Buka • 08.00 - 17.00 WIB", "Buka Sekarang". |
-| `seller_facilities` | Locator filter chips. | "Kelas Memahat", "Parkir Bus Wisata", "Praktik Pengerjaan Liat", "Galeri Virtual 360°". |
+| `seller_business_hours` | One row per weekday, UNIQUE `(seller_id, day_of_week)`. `day_of_week` is **ISO 1 = Monday … 7 = Sunday**, matching `date('N')`. | "Buka • 08.00 - 17.00 WIB", "Buka Sekarang". |
+| `seller_facilities` | Locator filter chips, UNIQUE `(seller_id, facility)`. `facility` is a code from `SellerFacilityModel::FACILITIES`; `label` is the Indonesian display text. | "Kelas Memahat", "Parkir Bus Wisata", "Praktik Pengerjaan Liat", "Galeri Virtual 360°". |
 | `seller_story_sections` | "Filosofi & Sejarah Kriya Candirejo" blocks. | "Akar Ilosfi Budaya", "Material Berkelanjutan SVLK", "Dampak Nyata Komunitas". |
 | `seller_media` | Storefront gallery, 360° tours and documentary video with duration. | "DOKUMENTER PERAJIN MANDIRI", "Tonton Proses Kriya (3:45 min)". |
 
@@ -178,8 +188,12 @@ Purchase is guaranteed by the `order_items` FK rather than by a denormalized
 cash book were removed: revenue is derived from `orders.seller_earning` grouped by day, and
 `visit_count` on the rollup is incremented on storefront view.
 
-Buyer geography on the dashboard is derived by `GROUP BY orders.ship_regency_id` — no
-extra table needed, because every order snapshots the destination region.
+Buyer geography on the dashboard is derived by `GROUP BY orders.ship_regency` — no
+extra table needed, because every order snapshots the destination region as text.
+
+`seller_daily_stats.order_count` / `revenue_total` / `completed_count` are the same kind of
+rollup: one row per seller per day, recognised on the day the parcel shipped (`orders.shipped_at`),
+so the dashboard can never report a sale that is not in `orders`.
 
 ---
 
@@ -199,33 +213,69 @@ extra table needed, because every order snapshots the destination region.
 
 ---
 
-## 10. Follow-ups before feature work
+## 10. Seed data
+
+`app/Database/Seeds/DemoSeeder.php` proves the schema end to end. It is guarded
+(marker user `sari.pembeli` short-circuits a re-run), transactional, reads every id
+back from the connection instead of assuming one, and is exercised verbatim by
+`tests/database/DemoSeederTest.php` on the SQLite test engine. Run it on the real
+database with:
+
+```bash
+php spark migrate --all
+php spark db:seed 'App\Database\Seeds\DemoSeeder'
+```
+
+(The namespace is `App\Database\Seeds` — the file lives under `app/Database/Seeds/`.)
+That exact path — migrations plus seeder on MariaDB 11.8, followed by an HTTP smoke
+test of the public and signed-in pages — is the acceptance check for the MVP.
+
+| Group | What it inserts | Notes |
+|---|---|---|
+| Accounts | 4 Shield users | one `customer` (`sari.pembeli`) and three `seller`s, each with a real `email_password` identity (`secret` = email, `secret2` = password hash) so `password_verify()` passes at login. All accounts use the demo password `lokapren123`. Groups are assigned via Shield's `addGroup()`. |
+| Storefronts | 3 sellers | `seller_profiles` plus 7 `seller_business_hours` rows (ISO `day_of_week`), `seller_facilities`, two story sections, three quick replies, and generated PNGs under `writable/uploads/demo/`. |
+| Catalog | 7 categories, 8 products | 4 root + 3 child `product_categories`; 7 published + 1 draft product, published ones with `product_images` (deterministic generated tiles, cover path resolvable) and some with variants. |
+| Content | 3+4 blog rows | `blog_categories` and `blog_posts` (3 published, 1 draft). |
+| Commerce | 4 orders, 3 reviews, 1 cart | 3 `completed` + 1 `in_production` order, each with items, a shipment, and a monotonic status timeline; one 5-star review per completed order. Money is computed server-side in whole rupiah: always `subtotal + shipping_total = grand_total` and `platform_fee = subtotal / 20`. |
+| Analytics | 54 daily rows | one `seller_daily_stats` row per seller for the last 18 days. `order_count` / `revenue_total` are read **back from `orders`** (recognised on the `shipped_at` day), and every `sold_count` / `orders_count` / `rating_*` counter is recomputed after seeding rather than hand-written, so a counter can never disagree with the rows behind it. |
+
+---
+
+## 11. Follow-ups before feature work
 
 1. **Set `appTimezone` to `Asia/Jakarta`** in `app/Config/App.php` (currently `UTC`). All
-   `DATETIME` columns assume WIB.
+   `DATETIME` columns assume WIB. **Done** — `appTimezone` is `Asia/Jakarta`.
 2. **Map a single login input to either identifier.** `Auth::$validFields` is now
    `['email', 'username']`, but Shield's `LoginController::recordLoginAttempt()` requires
    exactly one submitted credential, so the shipped login view (which posts only `email`)
    keeps working while a custom controller maps an "Email atau Nama Pengguna" field onto
-   the right key.
+   the right key. **Done** — `App\Controllers\Auth\LoginController` decides between the
+   two columns by the presence of an `@` in the value.
 3. **Encrypt `user_profiles.identity_number`** at rest if it is collected; never echo it
    back in a view.
 4. **Add MariaDB `FULLTEXT`** on `products.name, summary, description` for search
    (`ALTER TABLE products ADD FULLTEXT ...`). Not in the migration because the SQLite
-   test engine cannot express it.
+   test engine cannot express it. Search currently uses `LIKE`, which is portable.
 5. **Consider `utf8mb4_unicode_ci`.** `Config/Database::$default['DBCollat']` is
    `utf8mb4_general_ci`, so slug and code comparisons use the general collation.
-6. **Region + category seeders** (`app/Database/Seeds`) for Central Java / Magelang.
+6. **When replaying the demo set on MariaDB**, run
+   `php spark migrate --all` then `php spark db:seed 'App\Database\Seeds\DemoSeeder'`;
+   the seeder is written to behave identically on MariaDB and the SQLite test
+   engine. No region lookup data is needed because geography is stored on the rows
+   themselves (decision 9). **Verified** against MariaDB 11.8 in this environment:
+   migrations, seeding (and its idempotent second run), and an HTTP walk of the
+   public and signed-in pages all pass against the MySQLi connection.
 
 ---
 
-## 11. Deliberately excluded from the MVP
+## 12. Deliberately excluded from the MVP
 
 These were designed and then removed because nothing in the AGENTS feature list or the
 MVP screens needs them. Each is a pure additive change if it comes back.
 
 | Removed | Why |
 |---|---|
+| `regions` lookup | A normalised province → regency → district → village table was designed for the locator and buyer geography, but every read filters or groups the seller's/order's own text columns, so the join would only add indirection. Add it back when a screen needs to pick from a governed list. |
 | `users.phone` | Auth is username + email + password only. Shield stores email in `auth_identities`, so no schema change was ever required. |
 | `vouchers`, `voucher_redemptions` | Discounts are not an MVP feature. |
 | `wishlist_items` | "Koleksi Favorit" is post-purchase curation, not core to buying. |

@@ -45,11 +45,22 @@ class ProductCategoryModel extends BaseModel
      */
     public function withProductCounts(): array
     {
+        // CI4 does not apply the database prefix inside a function call in
+        // `select()`, so the table is prefixed here by hand — otherwise the
+        // query fails with "no such column: products.id" as soon as a page
+        // renders the category nav.
+        $products = $this->db->prefixTable('products');
+
         $builder = $this->newQuery()
             ->select('product_categories.*')
-            ->select('COUNT(products.id) AS product_count', false)
+            ->select('COUNT(' . $products . '.id) AS product_count', false)
             ->join('products', 'products.category_id = product_categories.id', 'left')
             ->where('product_categories.is_active', 1)
+            // Counted under the same conditions the public catalog uses, so the
+            // nav number matches what a click actually finds. A draft or an
+            // unpublished product must not inflate it.
+            ->where('products.status', ProductModel::STATUS_PUBLISHED)
+            ->where('products.is_active', 1)
             ->where('products.deleted_at', null)
             ->groupBy('product_categories.id')
             ->orderBy('product_categories.position', 'ASC');

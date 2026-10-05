@@ -1,51 +1,48 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-</head>
-<body>
-    <h1>Log in</h1>
+<?= $this->extend('layouts/main') ?>
 
-    <?php if (session('error') !== null) : ?>
-        <p><?= esc(session('error')) ?></p>
-    <?php elseif (session('errors') !== null) : ?>
-        <?php if (is_array(session('errors'))) : ?>
-            <?php foreach (session('errors') as $error) : ?>
-                <p><?= esc($error) ?></p>
-            <?php endforeach ?>
-        <?php else : ?>
-            <p><?= esc(session('errors')) ?></p>
-        <?php endif ?>
-    <?php endif ?>
+<?= $this->section('content') ?>
 
-    <?php if (session('message') !== null) : ?>
-        <p><?= esc(session('message')) ?></p>
-    <?php endif ?>
+<div class="lp-auth">
+    <div class="lp-auth__card">
+        <div class="lp-auth__head">
+            <h1>Masuk ke Lokapren</h1>
+            <p class="lp-muted">Temukan karya dari pengrajin Magelang dan sekitarnya.</p>
+        </div>
 
-    <form action="<?= url_to('login') ?>" method="post">
-        <?= csrf_field() ?>
 
-        <label for="email">Email</label>
-        <br>
-        <input type="email" id="email" name="email" inputmode="email" autocomplete="email" value="<?= old('email') ?>" required>
-        <br><br>
+        <form method="post" action="<?= route_to('login') ?>" autocomplete="on">
+            <?= csrf_field() ?>
 
-        <label for="password">Password</label>
-        <br>
-        <input type="password" id="password" name="password" autocomplete="current-password" required>
-        <br><br>
+            <div class="lp-field">
+                <label for="email">Email atau nama pengguna</label>
+                <input id="email" type="text" name="email"
+                       value="<?= esc(old('email')) ?>"
+                       autocomplete="username"
+                       inputmode="email"
+                       required
+                       autofocus>
+            </div>
 
-        <label>
-            <input type="checkbox" name="remember"<?php if (old('remember')): ?> checked<?php endif ?>>
-            Remember me
-        </label>
-        <br><br>
+            <div class="lp-field">
+                <label for="password">Kata sandi</label>
+                <input id="password" type="password" name="password"
+                       autocomplete="current-password"
+                       required>
+            </div>
 
-        <button type="submit">Log in</button>
-    </form>
+            <label class="lp-field--inline" style="margin-bottom:1rem;">
+                <input type="checkbox" name="remember" value="1" <?= old('remember') ? 'checked' : '' ?>>
+                <span>Ingat saya di perangkat ini</span>
+            </label>
 
-    <p>Don't have an account? <a href="<?= url_to('register') ?>">Register</a></p>
-</body>
-</html>
+            <button class="lp-btn lp-btn--solid lp-btn--block" type="submit">Masuk</button>
+        </form>
+
+        <p class="lp-small lp-muted" style="margin-top:1rem;text-align:center;">
+            Belum punya akun?
+            <a href="<?= route_to('register') ?>">Daftar sebagai pembeli atau pengrajin</a>
+        </p>
+    </div>
+</div>
+
+<?= $this->endSection() ?>

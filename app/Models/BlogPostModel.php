@@ -69,6 +69,7 @@ class BlogPostModel extends BaseModel
             ->where('id', $postId)
             ->set([
                 'status'       => self::STATUS_PUBLISHED,
+                'is_published' => 1,
                 'published_at' => date('Y-m-d H:i:s'),
             ])
             ->update();
