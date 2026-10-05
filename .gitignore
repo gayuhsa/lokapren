@@ -124,3 +124,8 @@ _modules/*
 
 /results/
 /phpunit.xml
+
+#-------------------------
+# Misc Files
+#-------------------------
+/scratchpad/
